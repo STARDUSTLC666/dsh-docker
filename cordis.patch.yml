@@ -1,0 +1,17 @@
+# dsh-docker 组合包补丁：把容器管理工具插件行插入 profile。
+# 本补丁按 id 覆盖；用户应在自己 profile 的 cordis.patch.yml 里覆盖本行的整个
+# config（见 README 的配置示例）。配置缺失时插件仍会加载（依赖 PATH 上的 docker）。
+#
+# 示例（用户 profile 的 cordis.patch.yml）：
+#   - id: docker
+#     name: 'dsh-docker'
+#     config:
+#       # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
+#       timeoutMs: 60000       # 单次操作超时（默认 60 秒，5 秒 - 10 分钟）
+#       # execApproval: false  # 关闭 docker_exec 的审批门（默认 true）
+#
+- insert:
+    - id: docker
+      name: 'dsh-docker'
+      config:
+        timeoutMs: 60000

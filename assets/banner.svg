@@ -1,0 +1,23 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1280' height='640' viewBox='0 0 1280 640'>
+  <defs>
+    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#0b2239'/>
+      <stop offset='100%' stop-color='#12557f'/>
+    </linearGradient>
+    <linearGradient id='accent' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#1d8cf8'/>
+      <stop offset='100%' stop-color='#0f6ab4'/>
+    </linearGradient>
+  </defs>
+  <rect width='1280' height='640' fill='url(#bg)'/>
+  <g transform='translate(150,170)'>
+    <rect x='0' y='0' width='270' height='270' rx='60' fill='url(#accent)'/>
+    <rect x='44' y='60' width='70' height='70' rx='12' fill='#ffffff' opacity='0.92'/>
+    <rect x='44' y='148' width='70' height='70' rx='12' fill='#ffffff' opacity='0.7'/>
+    <rect x='132' y='60' width='94' height='158' rx='12' fill='#ffffff' opacity='0.55'/>
+    <path d='M104 118 h60 M104 136 h40' stroke='#0b2239' stroke-width='10' stroke-linecap='round'/>
+  </g>
+  <text x='470' y='285' font-family='Segoe UI, Microsoft YaHei, sans-serif' font-size='88' font-weight='700' fill='#ffffff'>dsh-docker</text>
+  <text x='474' y='355' font-family='Segoe UI, Microsoft YaHei, sans-serif' font-size='32' fill='#9ecbff'>Containers for your DeepSeek Harness agent</text>
+  <path d='M0 560 q160 -60 320 0 t320 0 t320 0 t320 0' fill='none' stroke='#1d8cf8' stroke-width='10' stroke-linecap='round' opacity='0.3'/>
+</svg>

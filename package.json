@@ -1,0 +1,60 @@
+{
+  "name": "dsh-docker",
+  "version": "0.1.0",
+  "description": "DSH 容器管理插件：docker_ps/logs/inspect/exec/manage 五工具，走官方 subprocess 服务跑 docker CLI、argv 无 shell 注入、exec 审批门、零运行时依赖。",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm run build && node --test \"test/*.test.mjs\"",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "docker",
+    "container",
+    "devops"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/STARDUSTLC666/dsh-docker"
+  },
+  "bugs": {
+    "url": "https://github.com/STARDUSTLC666/dsh-docker/issues"
+  },
+  "homepage": "https://github.com/STARDUSTLC666/dsh-docker#readme",
+  "author": "stardustlc",
+  "packageManager": "pnpm@11.7.0"
+}
