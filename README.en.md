@@ -8,6 +8,8 @@ DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through 
 
 ![npm version](https://img.shields.io/npm/v/dsh-docker?label=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dm/dsh-docker) ![license](https://img.shields.io/npm/l/dsh-docker) ![stars](https://img.shields.io/github/stars/STARDUSTLC666/dsh-docker?style=social)
 
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
+
 ## Installation
 
 ```bash
