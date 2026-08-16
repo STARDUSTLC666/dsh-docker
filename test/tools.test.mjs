@@ -16,9 +16,9 @@ function makeRunner(results = []) {
 
 const cfg = resolveConfig({ timeoutMs: 30000 })
 
-test('构建 5 个工具且名字正确', () => {
+test('构建 6 个工具且名字正确', () => {
   const names = buildDockerTools(cfg, makeRunner()).map((t) => t.name).sort()
-  assert.deepEqual(names, ['docker_exec', 'docker_inspect', 'docker_logs', 'docker_manage', 'docker_ps'])
+  assert.deepEqual(names, ['docker_exec', 'docker_images', 'docker_inspect', 'docker_logs', 'docker_manage', 'docker_ps'])
 })
 
 test('每个工具 schema 是 object JSON Schema', () => {
@@ -48,6 +48,15 @@ test('docker_logs：tail 钳制 + 非零退出抛中文错误', async () => {
   assert.ok(value.text.includes('line2'))
   const failing = buildDockerTools(cfg, makeRunner([{ exitCode: 1, stderr: 'no such container' }])).find((t) => t.name === 'docker_logs')
   await assert.rejects(() => failing.execute({ container: 'nope' }), /docker logs.*失败.*no such container/)
+})
+
+test('docker_images：解析镜像列表', async () => {
+  const runner = makeRunner([{ stdout: JSON.stringify({ ID: 'sha256:abc', Repository: 'nginx', Tag: 'latest', Size: '188MB', CreatedSince: '2 days ago' }) + '\n' }])
+  const images = buildDockerTools(cfg, runner).find((t) => t.name === 'docker_images')
+  const value = await images.execute({ dangling: true })
+  assert.equal(value.count, 1)
+  assert.equal(value.images[0].repository, 'nginx')
+  assert.ok(runner.calls[0].argv.includes('--filter'))
 })
 
 test('docker_inspect：摘要', async () => {

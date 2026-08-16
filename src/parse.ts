@@ -33,6 +33,35 @@ export function parsePsJson(text: string): ContainerInfo[] {
   return rows
 }
 
+/** 镜像摘要。 */
+export interface ImageInfo {
+  id: string
+  repository: string
+  tag: string
+  size: string
+  createdSince: string
+}
+
+/** docker images --format json 的每一行解析。 */
+export function parseImagesJson(text: string): ImageInfo[] {
+  const rows: ImageInfo[] = []
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (trimmed === '') continue
+    try {
+      const raw = JSON.parse(trimmed) as Record<string, unknown>
+      rows.push({
+        id: typeof raw.ID === 'string' ? raw.ID : String(raw.ID ?? ''),
+        repository: typeof raw.Repository === 'string' ? raw.Repository : String(raw.Repository ?? ''),
+        tag: typeof raw.Tag === 'string' ? raw.Tag : String(raw.Tag ?? ''),
+        size: typeof raw.Size === 'string' ? raw.Size : String(raw.Size ?? ''),
+        createdSince: typeof raw.CreatedSince === 'string' ? raw.CreatedSince : String(raw.CreatedSince ?? ''),
+      })
+    } catch { /* 跳过坏行 */ }
+  }
+  return rows
+}
+
 /** docker inspect 的 JSON 摘要。 */
 export function parseInspectJson(text: string): Record<string, unknown> {
   const raw = JSON.parse(text) as unknown

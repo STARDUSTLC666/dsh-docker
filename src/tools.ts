@@ -3,10 +3,10 @@
  *
  * @module dsh-docker/tools
  */
-import { inspectArgs, logsArgs, manageArgs, execArgs, psArgs, splitCommand } from './args.js'
+import { imagesArgs, inspectArgs, logsArgs, manageArgs, execArgs, psArgs, splitCommand } from './args.js'
 import { assertContainerRef, type ResolvedDockerConfig } from './config.js'
 import { type ProcessRunner, type RunResult } from './exec.js'
-import { parseInspectJson, parsePsJson } from './parse.js'
+import { parseImagesJson, parseInspectJson, parsePsJson } from './parse.js'
 
 export interface ContentBlock {
   type: 'text'
@@ -93,6 +93,12 @@ const execSchema = {
   additionalProperties: true,
 }
 
+const imagesSchema = {
+  type: 'object',
+  properties: { count: { type: 'integer' }, dangling: { type: 'boolean' }, images: { type: 'array', items: { type: 'object', additionalProperties: true } } },
+  additionalProperties: true,
+}
+
 const manageSchema = {
   type: 'object',
   properties: { container: { type: 'string' }, action: { type: 'string' }, output: { type: 'string' } },
@@ -157,6 +163,35 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
       const follow = args.follow === true
       const result = await runChecked(runner, logsArgs(cfg.dockerPath, container, tail, follow), follow ? Math.min(timeout, 30000) : timeout, 'docker logs')
       return { container, tail, text: result.stdout }
+    },
+    timeoutMs: timeout,
+  }
+
+  const dockerImages: DockerToolDefinition = {
+    name: 'docker_images',
+    description: '列出本地 Docker 镜像（仓库/标签/大小/创建时间）。dangling=true 时只列未被任何标签引用的悬空镜像。',
+    parameters: compileParameters({
+      dangling: { type: 'boolean', description: '是否只列出悬空镜像（默认 false）。' },
+    }),
+    output: {
+      schema: imagesSchema,
+      render: (_args, value) => {
+        const rec = asRecord(value)
+        const images = Array.isArray(rec.images) ? rec.images : []
+        const lines = ['共 ' + images.length + ' 个镜像：']
+        for (const item of images) {
+          const image = asRecord(item)
+          lines.push('- ' + image.repository + ':' + image.tag + '（' + image.size + '，' + image.createdSince + '）')
+        }
+        return [{ type: 'text', text: lines.join('\n') }]
+      },
+    },
+    async execute(rawArgs: unknown) {
+      const args = asRecord(rawArgs)
+      const dangling = args.dangling === true
+      const result = await runChecked(runner, imagesArgs(cfg.dockerPath, dangling), timeout, 'docker images')
+      const images = parseImagesJson(result.stdout)
+      return { count: images.length, dangling, images }
     },
     timeoutMs: timeout,
   }
@@ -237,5 +272,5 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
     timeoutMs: timeout,
   }
 
-  return [dockerPs, dockerLogs, dockerInspect, dockerExec, dockerManage]
+  return [dockerPs, dockerLogs, dockerImages, dockerInspect, dockerExec, dockerManage]
 }

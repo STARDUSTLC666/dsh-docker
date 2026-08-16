@@ -1,8 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  psArgs, logsArgs, inspectArgs, execArgs, manageArgs, splitCommand,
-  parsePsJson, parseInspectJson, resolveConfig, assertContainerRef,
+  psArgs, logsArgs, inspectArgs, execArgs, manageArgs, imagesArgs, splitCommand,
+  parsePsJson, parseInspectJson, parseImagesJson, resolveConfig, assertContainerRef,
 } from '../lib/index.js'
 
 test('psArgs：格式与过滤', () => {
@@ -13,6 +13,11 @@ test('psArgs：格式与过滤', () => {
 test('logsArgs：tail 钳制与 follow', () => {
   assert.deepEqual(logsArgs('docker', 'web', 100, false), ['docker', 'logs', '--tail', '100', 'web'])
   assert.deepEqual(logsArgs('docker', 'web', 50, true), ['docker', 'logs', '--follow', '--tail', '50', 'web'])
+})
+
+test('imagesArgs：JSON 格式与悬空过滤', () => {
+  assert.deepEqual(imagesArgs('docker'), ['docker', 'images', '--format', 'json'])
+  assert.deepEqual(imagesArgs('docker', true), ['docker', 'images', '--format', 'json', '--filter', 'dangling=true'])
 })
 
 test('inspect/exec/manage argv', () => {
@@ -38,6 +43,13 @@ test('parsePsJson：docker ps JSON 行', () => {
   assert.equal(rows.length, 2)
   assert.equal(rows[0].name, 'web-1')
   assert.equal(rows[1].state, 'exited')
+})
+
+test('parseImagesJson：docker images JSON 行', () => {
+  const rows = parseImagesJson(JSON.stringify({ ID: 'sha256:abc', Repository: 'nginx', Tag: 'latest', Size: '188MB', CreatedSince: '2 days ago' }) + '\nbad-line\n')
+  assert.equal(rows.length, 1)
+  assert.equal(rows[0].repository, 'nginx')
+  assert.equal(rows[0].size, '188MB')
 })
 
 test('parseInspectJson：摘要提取', () => {

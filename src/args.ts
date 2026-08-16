@@ -16,6 +16,13 @@ export function logsArgs(docker: string, container: string, tail: number, follow
   return [docker, 'logs', follow ? '--follow' : '', '--tail', String(tail), container].filter((item) => item !== '')
 }
 
+/** 列出镜像（JSON 格式；dangling=true 只列悬空镜像）。 */
+export function imagesArgs(docker: string, dangling = false): string[] {
+  const argv = [docker, 'images', '--format', 'json']
+  if (dangling) argv.push('--filter', 'dangling=true')
+  return argv
+}
+
 /** 查看详情（docker inspect 原生 JSON）。 */
 export function inspectArgs(docker: string, container: string): string[] {
   return [docker, 'inspect', container]
