@@ -4,7 +4,7 @@
 
 > **Your agent can manage containers now**: five tools covering container listing, logs, inspection, in-container exec, and lifecycle management.
 
-DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through the official subprocess service with shell-free argv arrays, an approval gate on `docker_exec`, and **zero runtime dependencies**.
+DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through the official subprocess service with shell-free argv arrays, six tools including image listing, an approval gate on `docker_exec`, and **zero runtime dependencies**.
 
 ![npm version](https://img.shields.io/npm/v/dsh-docker?label=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dm/dsh-docker) ![license](https://img.shields.io/npm/l/dsh-docker) ![stars](https://img.shields.io/github/stars/STARDUSTLC666/dsh-docker?style=social)
 
@@ -25,6 +25,7 @@ Requires Docker installed locally (`docker version` should work); use `dockerPat
   name: '@stardustlc/dsh-docker'
   config:
     # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
+    dockerPath: docker     # optional; or use the DSH_DOCKER_PATH env var
     timeoutMs: 60000       # per-operation timeout (default 60s, 5s - 10min)
     # execApproval: false  # disable the docker_exec approval gate (default true)
 ```
@@ -34,6 +35,7 @@ Requires Docker installed locally (`docker version` should work); use `dockerPat
 | Tool | Purpose | Safety |
 | :-- | :-- | :-- |
 | `docker_ps` | List containers (status/image/state, filterable) | — |
+| `docker_images` | List local images (repository/tag/size/created, dangling-only filter) | — |
 | `docker_logs` | Tail container logs (line clamp, short follow) | — |
 | `docker_inspect` | Container details (image/state/ports) | — |
 | `docker_exec` | Run a command inside a container | Approval gate + container-name validation |
@@ -44,6 +46,7 @@ Requires Docker installed locally (`docker version` should work); use `dockerPat
 ```text
 docker_ps {}
 docker_ps { all: true, name: web }
+docker_images { dangling: true }
 docker_logs { container: web, tail: 200 }
 docker_inspect { container: web }
 docker_exec { container: web, command: 'df -h' }

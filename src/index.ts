@@ -1,8 +1,8 @@
 /**
  * dsh-docker —— 容器管理工具插件（node 半身，配置走 cordis.patch.yml）。
  *
- * 插件导出 apply(ctx, config)：注册五个面向模型的工具（docker_ps / docker_logs /
- * docker_inspect / docker_exec / docker_manage）。进程执行走 DSH 官方 subprocess 服务
+ * 插件导出 apply(ctx, config)：注册六个面向模型的工具（docker_ps / docker_logs /
+ * docker_images / docker_inspect / docker_exec / docker_manage）。进程执行走 DSH 官方 subprocess 服务
  * （argv 数组、无 shell），docker_exec 默认走宿主审批门。零运行时依赖。
  *
  * @module dsh-docker
@@ -29,7 +29,7 @@ export interface DockerPluginContext {
 }
 
 /**
- * 插件入口：解析配置、封装执行器、注册五工具；docker_exec 注入审批门。
+ * 插件入口：解析配置、封装执行器、注册六工具；docker_exec 注入审批门。
  */
 export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): void {
   let cfg

@@ -2,7 +2,7 @@
 
 # dsh-docker
 
-> **你的 agent 会管容器了**：五个工具覆盖容器列表、日志、详情、容器内执行与生命周期管理。
+> **你的 agent 会管容器了**：六个工具覆盖容器/镜像列表、日志、详情、容器内执行与生命周期管理。
 
 DSH（DeepSeek Harness）容器管理插件：走官方 subprocess 服务跑 docker CLI，argv 数组无 shell 注入，`docker_exec` 默认审批门，**零运行时依赖**。
 
@@ -25,6 +25,7 @@ dsh plugin --profile web add @stardustlc/dsh-docker
   name: '@stardustlc/dsh-docker'
   config:
     # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
+    dockerPath: docker     # 可选；也可用环境变量 DSH_DOCKER_PATH
     timeoutMs: 60000       # 单次操作超时（默认 60 秒，5 秒 - 10 分钟）
     # execApproval: false  # 关闭 docker_exec 审批门（默认 true）
 ```
@@ -34,6 +35,7 @@ dsh plugin --profile web add @stardustlc/dsh-docker
 | 工具 | 作用 | 安全 |
 | :-- | :-- | :-- |
 | `docker_ps` | 列出容器（状态/镜像/运行态，可过滤）| — |
+| `docker_images` | 列出本地镜像（仓库/标签/大小/创建时间，可只看悬空镜像）| — |
 | `docker_logs` | 查看日志尾部（行数钳制，可短时 follow）| — |
 | `docker_inspect` | 容器详情（镜像/状态/端口）| — |
 | `docker_exec` | 容器内执行命令 | 审批门 + 容器名白名单校验 |
@@ -44,6 +46,7 @@ dsh plugin --profile web add @stardustlc/dsh-docker
 ```text
 docker_ps {}
 docker_ps { all: true, name: web }
+docker_images { dangling: true }
 docker_logs { container: web, tail: 200 }
 docker_inspect { container: web }
 docker_exec { container: web, command: 'df -h' }
