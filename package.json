@@ -1,5 +1,5 @@
 {
-  "name": "dsh-docker",
+  "name": "@stardustlc/dsh-docker",
   "version": "0.1.0",
   "description": "DSH 容器管理插件：docker_ps/logs/inspect/exec/manage 五工具，走官方 subprocess 服务跑 docker CLI、argv 无 shell 注入、exec 审批门、零运行时依赖。",
   "type": "module",

@@ -4,7 +4,7 @@
 #
 # 示例（用户 profile 的 cordis.patch.yml）：
 #   - id: docker
-#     name: 'dsh-docker'
+#     name: '@stardustlc/dsh-docker'
 #     config:
 #       # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
 #       timeoutMs: 60000       # 单次操作超时（默认 60 秒，5 秒 - 10 分钟）
@@ -12,6 +12,6 @@
 #
 - insert:
     - id: docker
-      name: 'dsh-docker'
+      name: '@stardustlc/dsh-docker'
       config:
         timeoutMs: 60000

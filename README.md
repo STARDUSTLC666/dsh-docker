@@ -13,7 +13,7 @@ DSH（DeepSeek Harness）容器管理插件：走官方 subprocess 服务跑 doc
 ## 安装
 
 ```bash
-dsh plugin --profile web add dsh-docker
+dsh plugin --profile web add @stardustlc/dsh-docker
 ```
 
 需要本机装有 Docker（`docker version` 能出结果即可）；不在 PATH 上时用 `dockerPath` 指定。
@@ -22,7 +22,7 @@ dsh plugin --profile web add dsh-docker
 
 ```yaml
 - id: docker
-  name: 'dsh-docker'
+  name: '@stardustlc/dsh-docker'
   config:
     # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
     timeoutMs: 60000       # 单次操作超时（默认 60 秒，5 秒 - 10 分钟）

@@ -13,7 +13,7 @@ DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through 
 ## Installation
 
 ```bash
-dsh plugin --profile web add dsh-docker
+dsh plugin --profile web add @stardustlc/dsh-docker
 ```
 
 Requires Docker installed locally (`docker version` should work); use `dockerPath` when it is not on PATH.
@@ -22,7 +22,7 @@ Requires Docker installed locally (`docker version` should work); use `dockerPat
 
 ```yaml
 - id: docker
-  name: 'dsh-docker'
+  name: '@stardustlc/dsh-docker'
   config:
     # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
     timeoutMs: 60000       # per-operation timeout (default 60s, 5s - 10min)
