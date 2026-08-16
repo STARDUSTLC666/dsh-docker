@@ -64,6 +64,11 @@ test('resolveConfig：默认值与钳制', () => {
   assert.throws(() => resolveConfig({ timeoutMs: -1 }), /timeoutMs/)
 })
 
+test('DSH_DOCKER_PATH 环境变量回退', () => {
+  assert.equal(resolveConfig({}, { DSH_DOCKER_PATH: ' /usr/local/bin/docker ' }).dockerPath, '/usr/local/bin/docker')
+  assert.equal(resolveConfig({ dockerPath: 'podman' }, { DSH_DOCKER_PATH: '/usr/bin/docker' }).dockerPath, 'podman')
+})
+
 test('assertContainerRef 防注入', () => {
   assert.equal(assertContainerRef('web-1'), 'web-1')
   assert.throws(() => assertContainerRef('x; rm -rf /'), /非法/)

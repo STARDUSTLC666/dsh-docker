@@ -23,9 +23,9 @@ export interface ResolvedDockerConfig {
 /**
  * 解析并校验配置。
  */
-export function resolveConfig(config: DockerConfig | undefined | null): ResolvedDockerConfig {
+export function resolveConfig(config: DockerConfig | undefined | null, env: NodeJS.ProcessEnv = process.env): ResolvedDockerConfig {
   const cfg = config ?? {}
-  const dockerPath = typeof cfg.dockerPath === 'string' && cfg.dockerPath.trim() !== '' ? cfg.dockerPath.trim() : 'docker'
+  const dockerPath = typeof cfg.dockerPath === 'string' && cfg.dockerPath.trim() !== '' ? cfg.dockerPath.trim() : (env.DSH_DOCKER_PATH?.trim() || 'docker')
   let timeoutMs = 60000
   if (cfg.timeoutMs !== undefined) {
     if (typeof cfg.timeoutMs !== 'number' || !Number.isFinite(cfg.timeoutMs) || cfg.timeoutMs <= 0) throw new Error('timeoutMs 必须是大于 0 的数字（毫秒）。')
