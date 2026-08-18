@@ -13,6 +13,7 @@ import { createSubprocessRunner, type SubprocessSpawnLike } from './exec.js'
 import { buildDockerTools, type DockerToolDefinition } from './tools.js'
 
 /** cordis 服务注入：apply 里要用 ctx.subprocess 与 ctx.tools。 */
+export const name = 'docker'
 export const inject = ['subprocess', 'tools']
 
 /** 审批服务最小面。 */
