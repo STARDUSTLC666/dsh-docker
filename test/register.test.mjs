@@ -38,10 +38,10 @@ test('inject 声明 subprocess 与 tools', () => {
   assert.deepEqual(inject, ['subprocess', 'tools'])
 })
 
-test('apply 注册 6 个工具', () => {
+test('apply 注册 7 个工具', () => {
   const { ctx, registered } = makeFakeCtx({ request: async () => 'allowed-once' })
   apply(ctx, {})
-  assert.equal(registered.length, 6)
+  assert.equal(registered.length, 7)
 })
 
 test('docker_exec 审批门：放行/拒绝/无通道', async () => {
@@ -72,7 +72,7 @@ test('execApproval=false 时不注入审批门', async () => {
 test('dispose 卸载全部工具', () => {
   const { ctx, registered, listeners } = makeFakeCtx({ request: async () => 'allowed-once' })
   apply(ctx, {})
-  assert.equal(registered.length, 6)
+  assert.equal(registered.length, 7)
   for (const listener of listeners.dispose ?? []) listener()
   assert.equal(registered.length, 0)
 })

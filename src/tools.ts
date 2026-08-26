@@ -272,5 +272,39 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
     timeoutMs: timeout,
   }
 
-  return [dockerPs, dockerLogs, dockerImages, dockerInspect, dockerExec, dockerManage]
+  const dockerHealth: DockerToolDefinition = {
+    name: 'docker_health',
+    description: 'dsh-docker 自检：验证 docker CLI 与守护进程是否可用（执行 docker version），并汇总安全配置（exec 审批门、超时）。遇到问题时先运行本工具定位。',
+    parameters: compileParameters({}),
+    output: {
+      schema: { type: 'object', additionalProperties: true },
+      render: (_args, value) => {
+        const rec = asRecord(value)
+        const checks = Array.isArray(rec.checks) ? rec.checks : []
+        const lines = ['dsh-docker 自检' + (rec.ok === true ? '：正常。' : '：发现问题。')]
+        for (const item of checks) {
+          const c = asRecord(item)
+          lines.push('- ' + c.name + '：' + (c.ok === true ? '✅' : '❌ ' + String(c.detail ?? '')))
+        }
+        return [{ type: 'text', text: lines.join('\n') }]
+      },
+    },
+    async execute() {
+      const checks: Array<Record<string, unknown>> = []
+      let ok = true
+      try {
+        const result = await runChecked(runner, [cfg.dockerPath, 'version', '--format', '{{.Server.Version}}'], 15000, 'docker version')
+        checks.push({ name: 'docker daemon', ok: true, detail: 'server ' + result.stdout.trim() })
+      } catch (error) {
+        ok = false
+        checks.push({ name: 'docker daemon', ok: false, detail: error instanceof Error ? error.message : String(error) })
+      }
+      checks.push({ name: 'exec 审批门', ok: true, detail: cfg.execApproval === true ? '开启' : '关闭' })
+      checks.push({ name: '超时配置', ok: true, detail: 'timeoutMs=' + cfg.timeoutMs + ', graceMs=' + cfg.graceMs })
+      return { ok, plugin: 'dsh-docker', checks }
+    },
+    timeoutMs: 20000,
+  }
+
+  return [dockerPs, dockerLogs, dockerImages, dockerInspect, dockerExec, dockerManage, dockerHealth]
 }

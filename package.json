@@ -1,6 +1,6 @@
 {
   "name": "@stardustlc/dsh-docker",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "DSH 容器管理插件：docker_ps/logs/images/inspect/exec/manage 六工具，走官方 subprocess 服务跑 docker CLI、argv 无 shell 注入、exec 审批门、零运行时依赖。",
   "type": "module",
   "main": "lib/index.js",
