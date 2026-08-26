@@ -10,6 +10,10 @@ DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through 
 
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
+## Compatibility
+
+Verified against `@deepseek-ai/dsh@0.1.1-rc.2` on 2026-08-26. Built for the cordis patch-bundle plugin model (`cordis.patch.yml` + `dsh.bundle.patch`). No runtime imports of `@deepseek-ai/*` internals.
+
 ## Installation
 
 ```bash
@@ -17,6 +21,15 @@ dsh plugin --profile web add @stardustlc/dsh-docker
 ```
 
 Requires Docker installed locally (`docker version` should work); use `dockerPath` when it is not on PATH.
+
+## Uninstall
+
+```bash
+dsh plugin --profile web remove @stardustlc/dsh-docker
+```
+
+Then restart the web service. To clean up fully, also remove the plugin entry from your profile `cordis.patch.yml` if you overrode it.
+
 
 ## Configuration
 
