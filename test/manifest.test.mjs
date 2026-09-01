@@ -22,5 +22,5 @@ test('零运行时依赖 + 名称版本', () => {
   const pkg = require('../package.json')
   assert.equal(pkg.dependencies, undefined)
   assert.equal(pkg.name, '@stardustlc/dsh-docker')
-  assert.match(pkg.version, /^\d+\.\d+\.\d+$/)
+  assert.equal(pkg.version, '0.3.0')
 })
