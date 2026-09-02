@@ -16,17 +16,30 @@ import { buildDockerTools, type DockerToolDefinition } from './tools.js'
 export const name = 'docker'
 export const inject = ['subprocess', 'tools']
 
-/** 审批服务最小面。 */
-export interface DockerApproval {
-  request(options: { agent?: unknown; toolName?: unknown; callId?: unknown; reason: string; signal?: unknown }): Promise<'allowed-once' | 'cancelled' | 'unavailable' | string>
+/** Harness `tools/pre-execute` 的决策结果。 */
+type DockerPreToolDecision =
+  | { kind: 'allow' }
+  | { kind: 'deny'; reason: string }
+  | { kind: 'ask'; reason?: string }
+
+/** 审批策略需要读取的 alpha.4 工具执行字段。 */
+interface DockerToolExecution {
+  readonly name: string
+  readonly arguments: unknown
 }
+
+/** Harness `tools/pre-execute` waterfall 监听器。 */
+type DockerPreExecuteListener = (
+  exec: DockerToolExecution,
+  next: () => Promise<DockerPreToolDecision>,
+) => Promise<DockerPreToolDecision>
 
 /** 插件所需的最小 ctx 面。 */
 export interface DockerPluginContext {
   subprocess: { spawn: SubprocessSpawnLike }
-  tools: { register(definition: DockerToolDefinition, options?: { prepend?: boolean }): () => void }
-  get?(name: 'approval'): DockerApproval | undefined
-  on?(event: string, listener: () => void): () => void
+  tools: { register(definition: DockerToolDefinition): () => void }
+  on(event: 'tools/pre-execute', listener: DockerPreExecuteListener): () => void
+  on(event: 'dispose', listener: () => void): () => void
 }
 
 /**
@@ -43,38 +56,26 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
 
   const runner = createSubprocessRunner(ctx.subprocess.spawn, cfg.graceMs, cfg.timeoutMs)
   const tools = buildDockerTools(cfg, runner)
-  const disposers: Array<() => void> = []
-  for (const definition of tools) {
-    if (definition.name === 'docker_exec' && cfg.execApproval) {
-      definition.gate = async (exec: unknown, next: () => Promise<unknown>) => {
-        const approval = ctx.get?.('approval')
-        if (approval === undefined) {
-          return { kind: 'deny', reason: 'docker_exec 需要确认，但当前环境没有审批通道（如 headless）。如确定安全，可在配置中设置 execApproval: false 后直接执行。' }
-        }
-        const record = (typeof exec === 'object' && exec !== null ? exec : {}) as Record<string, unknown>
-        const args = (typeof record.args === 'object' && record.args !== null ? record.args : {}) as Record<string, unknown>
-        const command = typeof args.command === 'string' ? args.command : ''
-        const container = typeof args.container === 'string' ? args.container : ''
-        const outcome = await approval.request({
-          agent: record.agent,
-          toolName: record.name,
-          callId: record.callId,
-          reason: '在容器 ' + container + ' 内执行：' + command.slice(0, 200),
-          signal: record.signal,
-        })
-        if (outcome === 'allowed-once') return next()
-        if (outcome === 'cancelled') return { kind: 'deny', reason: '容器内执行确认被取消，命令未执行。' }
-        if (outcome === 'unavailable') return { kind: 'deny', reason: '容器内执行确认不可用（没有可用的审批界面），命令未执行。' }
-        return { kind: 'deny', reason: '容器内执行未获批准：要么你拒绝了，要么当前会话处于 Full Access（审批策略 never）。若在 Full Access：切到 Read Only / Write 再执行，或关闭 execApproval（自行承担风险）。' }
+  if (cfg.execApproval) {
+    ctx.on('tools/pre-execute', async (exec, next) => {
+      if (exec.name !== 'docker_exec') return next()
+      const args = (typeof exec.arguments === 'object' && exec.arguments !== null ? exec.arguments : {}) as Record<string, unknown>
+      const command = typeof args.command === 'string' ? args.command : ''
+      const container = typeof args.container === 'string' ? args.container : ''
+      return {
+        kind: 'ask',
+        reason: 'docker_exec 需要确认：在容器 ' + (container || '（未指定）') + ' 内执行：' + command.slice(0, 200) + (command.length > 200 ? '…' : ''),
       }
-    }
-    disposers.push(ctx.tools.register(definition, { prepend: true }))
-  }
-  if (typeof ctx.on === 'function') {
-    ctx.on('dispose', () => {
-      for (const dispose of disposers) dispose()
     })
   }
+
+  const disposers: Array<() => void> = []
+  for (const definition of tools) {
+    disposers.push(ctx.tools.register(definition))
+  }
+  ctx.on('dispose', () => {
+    for (const dispose of disposers) dispose()
+  })
 }
 
 export * from './args.js'

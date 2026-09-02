@@ -22,7 +22,6 @@ export interface DockerToolDefinition {
     render(args: unknown, value: unknown): ContentBlock[]
   }
   execute(args: unknown, exec: unknown): Promise<unknown>
-  gate?(exec: unknown, next: () => Promise<unknown>): Promise<unknown>
   timeoutMs?: number
 }
 
@@ -240,9 +239,6 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
       if (command.length === 0) throw new Error('command 不能为空。')
       const result = await runChecked(runner, execArgs(cfg.dockerPath, container, command), timeout, 'docker exec')
       return { container, exitCode: result.exitCode, stdout: result.stdout }
-    },
-    gate(exec: unknown, next: () => Promise<unknown>): Promise<unknown> {
-      return next()
     },
     timeoutMs: timeout,
   }

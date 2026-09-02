@@ -13,28 +13,33 @@ import { type DockerToolDefinition } from './tools.js';
 /** cordis 服务注入：apply 里要用 ctx.subprocess 与 ctx.tools。 */
 export declare const name = "docker";
 export declare const inject: string[];
-/** 审批服务最小面。 */
-export interface DockerApproval {
-    request(options: {
-        agent?: unknown;
-        toolName?: unknown;
-        callId?: unknown;
-        reason: string;
-        signal?: unknown;
-    }): Promise<'allowed-once' | 'cancelled' | 'unavailable' | string>;
+/** Harness `tools/pre-execute` 的决策结果。 */
+type DockerPreToolDecision = {
+    kind: 'allow';
+} | {
+    kind: 'deny';
+    reason: string;
+} | {
+    kind: 'ask';
+    reason?: string;
+};
+/** 审批策略需要读取的 alpha.4 工具执行字段。 */
+interface DockerToolExecution {
+    readonly name: string;
+    readonly arguments: unknown;
 }
+/** Harness `tools/pre-execute` waterfall 监听器。 */
+type DockerPreExecuteListener = (exec: DockerToolExecution, next: () => Promise<DockerPreToolDecision>) => Promise<DockerPreToolDecision>;
 /** 插件所需的最小 ctx 面。 */
 export interface DockerPluginContext {
     subprocess: {
         spawn: SubprocessSpawnLike;
     };
     tools: {
-        register(definition: DockerToolDefinition, options?: {
-            prepend?: boolean;
-        }): () => void;
+        register(definition: DockerToolDefinition): () => void;
     };
-    get?(name: 'approval'): DockerApproval | undefined;
-    on?(event: string, listener: () => void): () => void;
+    on(event: 'tools/pre-execute', listener: DockerPreExecuteListener): () => void;
+    on(event: 'dispose', listener: () => void): () => void;
 }
 /**
  * 插件入口：解析配置、封装执行器、注册六工具；docker_exec 注入审批门。
