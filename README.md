@@ -12,7 +12,7 @@ DSH（DeepSeek Harness）容器管理插件：走官方 subprocess 服务跑 doc
 
 ## 兼容性
 
-在 `@deepseek-ai/dsh@0.1.2-alpha.2` 上验证（2026-08-31）。遵循 cordis 组合包补丁模型（`cordis.patch.yml` + `dsh.bundle.patch`），运行时不 import 任何 `@deepseek-ai/*` 内部模块。
+在 `@deepseek-ai/dsh@0.1.2-alpha.4` 源码模式下验证（2026-09-02）。遵循 cordis 组合包补丁模型（`cordis.patch.yml` + `dsh.bundle.patch`），运行时不 import 任何 `@deepseek-ai/*` 内部模块。
 
 ## 安装
 
