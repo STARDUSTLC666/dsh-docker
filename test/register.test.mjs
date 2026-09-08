@@ -42,7 +42,7 @@ test('apply 注册 7 个工具', () => {
   assert.ok(registered.every((item) => !Object.hasOwn(item.definition, 'gate')))
 })
 
-test('docker_exec 通过 tools/pre-execute 返回 ask，其他工具继续 waterfall', async () => {
+test('docker_exec 与破坏性 docker_manage 返回 ask，安全操作继续 waterfall', async () => {
   const { ctx, listeners } = makeFakeCtx()
   apply(ctx, {})
   const preExecute = listeners['tools/pre-execute'][0]
@@ -56,6 +56,23 @@ test('docker_exec 通过 tools/pre-execute 返回 ask，其他工具继续 water
   assert.ok(ask.reason.includes('ls -la'))
   assert.equal(delegated, false)
 
+  const manageAsk = await preExecute(
+    { name: 'docker_manage', arguments: { container: 'web', action: 'rm' } },
+    async () => { delegated = true; return { kind: 'allow' } },
+  )
+  assert.equal(manageAsk.kind, 'ask')
+  assert.ok(manageAsk.reason.includes('web'))
+  assert.ok(manageAsk.reason.includes('rm'))
+
+  delegated = false
+  const startAllowed = await preExecute(
+    { name: 'docker_manage', arguments: { container: 'web', action: 'start' } },
+    async () => { delegated = true; return { kind: 'allow' } },
+  )
+  assert.deepEqual(startAllowed, { kind: 'allow' })
+  assert.equal(delegated, true)
+
+  delegated = false
   const allowed = await preExecute(
     { name: 'docker_ps', arguments: {} },
     async () => { delegated = true; return { kind: 'allow' } },
@@ -64,10 +81,15 @@ test('docker_exec 通过 tools/pre-execute 返回 ask，其他工具继续 water
   assert.equal(delegated, true)
 })
 
-test('execApproval=false 时不注册 pre-execute 审批策略', () => {
+test('两类审批均关闭时不注册 pre-execute 策略', () => {
   const { ctx, listeners } = makeFakeCtx()
-  apply(ctx, { execApproval: false })
+  apply(ctx, { execApproval: false, manageApproval: false })
   assert.equal(listeners['tools/pre-execute'], undefined)
+})
+
+test('无效配置响亮失败，不静默回退默认值', () => {
+  const { ctx } = makeFakeCtx()
+  assert.throws(() => apply(ctx, { timeoutMs: -1 }), /timeoutMs/)
 })
 
 test('dispose 卸载全部工具', () => {

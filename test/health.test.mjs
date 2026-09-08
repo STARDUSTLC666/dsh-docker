@@ -21,3 +21,12 @@ test('docker_health 守护进程不可达时 ok=false 且给出原因', async ()
   assert.equal(value.ok, false)
   assert.match(String(value.checks[0].detail), /daemon|Docker|退出码/i)
 })
+
+test('docker_health 不吞掉调用取消错误', async () => {
+  const controller = new AbortController()
+  const reason = new Error('caller cancelled health check')
+  controller.abort(reason)
+  const runner = { async run() { throw reason } }
+  const health = buildDockerTools(cfg, runner).find((t) => t.name === 'docker_health')
+  await assert.rejects(() => health.execute({}, { signal: controller.signal }), /caller cancelled/)
+})

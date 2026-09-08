@@ -34,3 +34,23 @@ test('createSubprocessRunner 正常结束收集 stdout/stderr', async () => {
   const result = await runner.run(['docker', 'version'])
   assert.deepEqual(result, { exitCode: 0, signal: null, stdout: 'ok', stderr: 'warn' })
 })
+
+test('createSubprocessRunner 把工具调用取消信号传给 subprocess', async () => {
+  const caller = new AbortController()
+  let observed
+  const spawn = (spec) => {
+    observed = spec
+    return {
+      done: new Promise((_resolve, reject) => {
+        spec.signal.addEventListener('abort', () => reject(spec.signal.reason), { once: true })
+      }),
+      collected: {},
+      terminate: () => {},
+    }
+  }
+  const runner = createSubprocessRunner(spawn, 1000, 5000)
+  const pending = runner.run(['docker', 'ps'], { signal: caller.signal })
+  caller.abort(new Error('cancelled by caller'))
+  await assert.rejects(() => pending, /cancelled by caller/)
+  assert.equal(observed.signal.aborted, true)
+})

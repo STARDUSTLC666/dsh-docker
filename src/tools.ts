@@ -1,5 +1,6 @@
 /**
- * 五个面向模型的容器工具：docker_ps / docker_logs / docker_inspect / docker_exec / docker_manage。
+ * 七个面向模型的容器工具：docker_ps / docker_logs / docker_images / docker_inspect /
+ * docker_exec / docker_manage / docker_health。
  *
  * @module dsh-docker/tools
  */
@@ -53,8 +54,14 @@ function requiredString(args: Record<string, unknown>, key: string, label: strin
   return value
 }
 
-async function runChecked(runner: ProcessRunner, argv: string[], timeoutMs: number, label: string): Promise<RunResult> {
-  const result = await runner.run(argv, { timeoutMs })
+function executionSignal(exec: unknown): AbortSignal | undefined {
+  if (typeof exec !== 'object' || exec === null) return undefined
+  const signal = (exec as { signal?: unknown }).signal
+  return signal instanceof AbortSignal ? signal : undefined
+}
+
+async function runChecked(runner: ProcessRunner, argv: string[], timeoutMs: number, label: string, signal?: AbortSignal): Promise<RunResult> {
+  const result = await runner.run(argv, { timeoutMs, ...(signal === undefined ? {} : { signal }) })
   if (result.exitCode !== 0) {
     const tail = result.stderr.trim().split(/\r?\n/).slice(-6).join(' | ')
     throw new Error(label + '失败（退出码 ' + String(result.exitCode ?? 'null') + '）：' + (tail || '无错误输出') + '。请确认 docker 可用（docker version）。')
@@ -104,7 +111,7 @@ const manageSchema = {
   additionalProperties: true,
 }
 
-/** 构建五个工具定义。 */
+/** 构建七个工具定义。 */
 export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRunner): DockerToolDefinition[] {
   const cfg = config
   const timeout = cfg.timeoutMs
@@ -129,10 +136,10 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: lines.join('\n') }]
       },
     },
-    async execute(rawArgs: unknown) {
+    async execute(rawArgs: unknown, exec: unknown) {
       const args = asRecord(rawArgs)
       const all = args.all === true
-      const result = await runChecked(runner, psArgs(cfg.dockerPath, all, optionalString(args, 'name')), timeout, 'docker ps')
+      const result = await runChecked(runner, psArgs(cfg.dockerPath, all, optionalString(args, 'name')), timeout, 'docker ps', executionSignal(exec))
       const containers = parsePsJson(result.stdout)
       return { count: containers.length, all, containers }
     },
@@ -154,13 +161,13 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: '容器 ' + rec.container + ' 最近日志：\n' + rec.text }]
       },
     },
-    async execute(rawArgs: unknown) {
+    async execute(rawArgs: unknown, exec: unknown) {
       const args = asRecord(rawArgs)
       const container = assertContainerRef(requiredString(args, 'container', '容器名'))
       const tailRaw = args.tail
       const tail = typeof tailRaw === 'number' && Number.isInteger(tailRaw) ? Math.min(2000, Math.max(1, tailRaw)) : 100
       const follow = args.follow === true
-      const result = await runChecked(runner, logsArgs(cfg.dockerPath, container, tail, follow), follow ? Math.min(timeout, 30000) : timeout, 'docker logs')
+      const result = await runChecked(runner, logsArgs(cfg.dockerPath, container, tail, follow), follow ? Math.min(timeout, 30000) : timeout, 'docker logs', executionSignal(exec))
       return { container, tail, text: result.stdout }
     },
     timeoutMs: timeout,
@@ -185,10 +192,10 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: lines.join('\n') }]
       },
     },
-    async execute(rawArgs: unknown) {
+    async execute(rawArgs: unknown, exec: unknown) {
       const args = asRecord(rawArgs)
       const dangling = args.dangling === true
-      const result = await runChecked(runner, imagesArgs(cfg.dockerPath, dangling), timeout, 'docker images')
+      const result = await runChecked(runner, imagesArgs(cfg.dockerPath, dangling), timeout, 'docker images', executionSignal(exec))
       const images = parseImagesJson(result.stdout)
       return { count: images.length, dangling, images }
     },
@@ -209,10 +216,10 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: '容器 ' + info.name + '（' + info.image + '）：' + (info.running === true ? '运行中' : '已停止') + '，端口：' + (Array.isArray(info.ports) ? info.ports.join(', ') : '无') }]
       },
     },
-    async execute(rawArgs: unknown) {
+    async execute(rawArgs: unknown, exec: unknown) {
       const args = asRecord(rawArgs)
       const container = assertContainerRef(requiredString(args, 'container', '容器名'))
-      const result = await runChecked(runner, inspectArgs(cfg.dockerPath, container), timeout, 'docker inspect')
+      const result = await runChecked(runner, inspectArgs(cfg.dockerPath, container), timeout, 'docker inspect', executionSignal(exec))
       return { container, info: parseInspectJson(result.stdout) }
     },
     timeoutMs: timeout,
@@ -232,12 +239,12 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: '容器 ' + rec.container + ' 执行完成（退出码 ' + rec.exitCode + '）：\n' + rec.stdout }]
       },
     },
-    async execute(rawArgs: unknown) {
+    async execute(rawArgs: unknown, exec: unknown) {
       const args = asRecord(rawArgs)
       const container = assertContainerRef(requiredString(args, 'container', '容器名'))
       const command = splitCommand(requiredString(args, 'command', '命令'))
       if (command.length === 0) throw new Error('command 不能为空。')
-      const result = await runChecked(runner, execArgs(cfg.dockerPath, container, command), timeout, 'docker exec')
+      const result = await runChecked(runner, execArgs(cfg.dockerPath, container, command), timeout, 'docker exec', executionSignal(exec))
       return { container, exitCode: result.exitCode, stdout: result.stdout }
     },
     timeoutMs: timeout,
@@ -245,7 +252,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerManage: DockerToolDefinition = {
     name: 'docker_manage',
-    description: '容器生命周期管理：start / stop / restart / rm（rm 强制删除）。注意 stop/restart/rm 会中断容器，谨慎使用。',
+    description: '容器生命周期管理：start / stop / restart / rm（rm 强制删除）。stop/restart/rm 默认进入审批门，批准后才执行。',
     parameters: compileParameters({
       container: { type: 'string', required: true, description: '容器名或 ID（必填）。' },
       action: { type: 'string', required: true, description: '操作：start / stop / restart / rm（必填）。' },
@@ -257,12 +264,12 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: '容器 ' + rec.container + ' 已执行 ' + rec.action + '。' }]
       },
     },
-    async execute(rawArgs: unknown) {
+    async execute(rawArgs: unknown, exec: unknown) {
       const args = asRecord(rawArgs)
       const container = assertContainerRef(requiredString(args, 'container', '容器名'))
       const action = requiredString(args, 'action', '操作')
       if (!['start', 'stop', 'restart', 'rm'].includes(action)) throw new Error('action 必须是 start / stop / restart / rm 之一（当前：' + action + '）。')
-      const result = await runChecked(runner, manageArgs(cfg.dockerPath, action as 'start' | 'stop' | 'restart' | 'rm', container), timeout, 'docker ' + action)
+      const result = await runChecked(runner, manageArgs(cfg.dockerPath, action as 'start' | 'stop' | 'restart' | 'rm', container), timeout, 'docker ' + action, executionSignal(exec))
       return { container, action, output: result.stdout.trim() }
     },
     timeoutMs: timeout,
@@ -270,7 +277,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerHealth: DockerToolDefinition = {
     name: 'docker_health',
-    description: 'dsh-docker 自检：验证 docker CLI 与守护进程是否可用（执行 docker version），并汇总安全配置（exec 审批门、超时）。遇到问题时先运行本工具定位。',
+    description: 'dsh-docker 自检：验证 docker CLI 与守护进程是否可用（执行 docker version），并汇总安全配置（exec/破坏性 manage 审批门、超时）。遇到问题时先运行本工具定位。',
     parameters: compileParameters({}),
     output: {
       schema: { type: 'object', additionalProperties: true },
@@ -285,17 +292,19 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         return [{ type: 'text', text: lines.join('\n') }]
       },
     },
-    async execute() {
+    async execute(_rawArgs: unknown, exec: unknown) {
       const checks: Array<Record<string, unknown>> = []
       let ok = true
       try {
-        const result = await runChecked(runner, [cfg.dockerPath, 'version', '--format', '{{.Server.Version}}'], 15000, 'docker version')
+        const result = await runChecked(runner, [cfg.dockerPath, 'version', '--format', '{{.Server.Version}}'], 15000, 'docker version', executionSignal(exec))
         checks.push({ name: 'docker daemon', ok: true, detail: 'server ' + result.stdout.trim() })
       } catch (error) {
+        if (executionSignal(exec)?.aborted === true) throw error
         ok = false
         checks.push({ name: 'docker daemon', ok: false, detail: error instanceof Error ? error.message : String(error) })
       }
       checks.push({ name: 'exec 审批门', ok: true, detail: cfg.execApproval === true ? '开启' : '关闭' })
+      checks.push({ name: 'manage 审批门', ok: true, detail: cfg.manageApproval === true ? '开启' : '关闭' })
       checks.push({ name: '超时配置', ok: true, detail: 'timeoutMs=' + cfg.timeoutMs + ', graceMs=' + cfg.graceMs })
       return { ok, plugin: 'dsh-docker', checks }
     },

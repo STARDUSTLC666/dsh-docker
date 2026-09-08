@@ -73,6 +73,9 @@ test('resolveConfig：默认值与钳制', () => {
   assert.equal(cfg.timeoutMs, 60000)
   assert.equal(cfg.execApproval, true)
   assert.equal(resolveConfig({ timeoutMs: 99999999 }).timeoutMs, 600000)
+  assert.equal(cfg.execApproval, true)
+  assert.equal(cfg.manageApproval, true)
+  assert.equal(resolveConfig({ execApproval: false, manageApproval: false }).manageApproval, false)
   assert.throws(() => resolveConfig({ timeoutMs: -1 }), /timeoutMs/)
 })
 

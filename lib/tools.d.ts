@@ -19,5 +19,5 @@ export interface DockerToolDefinition {
     execute(args: unknown, exec: unknown): Promise<unknown>;
     timeoutMs?: number;
 }
-/** 构建五个工具定义。 */
+/** 构建七个工具定义。 */
 export declare function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRunner): DockerToolDefinition[];

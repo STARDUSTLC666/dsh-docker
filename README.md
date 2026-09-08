@@ -2,9 +2,9 @@
 
 # dsh-docker
 
-> **你的 agent 会管容器了**：六个工具覆盖容器/镜像列表、日志、详情、容器内执行与生命周期管理。
+> **你的 agent 会管容器了**：七个工具覆盖容器/镜像列表、日志、详情、容器内执行、生命周期管理与健康检查。
 
-DSH（DeepSeek Harness）容器管理插件：走官方 subprocess 服务跑 docker CLI，argv 数组无 shell 注入，`docker_exec` 默认审批门，**零运行时依赖**。
+DSH（DeepSeek Harness）容器管理插件：走官方 subprocess 服务跑 docker CLI，argv 数组无 shell 注入，`docker_exec` 与破坏性生命周期操作默认审批门，**零运行时依赖**。
 
 ![npm version](https://img.shields.io/npm/v/@stardustlc/dsh-docker?label=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dm/@stardustlc/dsh-docker) ![license](https://img.shields.io/npm/l/@stardustlc/dsh-docker) ![stars](https://img.shields.io/github/stars/STARDUSTLC666/dsh-docker?style=social)
 
@@ -12,7 +12,7 @@ DSH（DeepSeek Harness）容器管理插件：走官方 subprocess 服务跑 doc
 
 ## 兼容性
 
-在 `@deepseek-ai/dsh@0.1.2-alpha.4` 源码模式下验证（2026-09-02）。遵循 cordis 组合包补丁模型（`cordis.patch.yml` + `dsh.bundle.patch`），运行时不 import 任何 `@deepseek-ai/*` 内部模块。
+已在官方 `@deepseek-ai/dsh@0.1.3-alpha.2` 下验证（2026-09-08）：18 个组件同载，工具注册与调用契约全部通过。遵循 cordis 组合包补丁模型（`cordis.patch.yml` + `dsh.bundle.patch`），运行时不 import 任何 `@deepseek-ai/*` 内部模块。
 
 ## 安装
 
@@ -41,6 +41,7 @@ dsh plugin --profile web remove @stardustlc/dsh-docker
     dockerPath: docker     # 可选；也可用环境变量 DSH_DOCKER_PATH
     timeoutMs: 60000       # 单次操作超时（默认 60 秒，5 秒 - 10 分钟）
     # execApproval: false  # 关闭 docker_exec 审批门（默认 true）
+    # manageApproval: false # 关闭 stop/restart/rm 审批门（默认 true，不推荐）
 ```
 
 ## 工具一览
@@ -52,7 +53,8 @@ dsh plugin --profile web remove @stardustlc/dsh-docker
 | `docker_logs` | 查看日志尾部（行数钳制，可短时 follow）| — |
 | `docker_inspect` | 容器详情（镜像/状态/端口）| — |
 | `docker_exec` | 容器内执行命令 | 审批门 + 容器名白名单校验 |
-| `docker_manage` | start / stop / restart / rm | 明确提示破坏性 |
+| `docker_manage` | start / stop / restart / rm | stop/restart/rm 审批门 |
+| `docker_health` | Docker daemon 与安全配置自检 | — |
 
 ### 示例
 
@@ -69,7 +71,7 @@ docker_manage { container: web, action: restart }
 ## 安全设计
 
 - **无 shell**：全部参数独立 argv 数组，命令注入不可能
-- **审批门**：docker_exec 默认弹审批（对齐 dsh-email / dsh-sql），headless 无审批通道时拒绝
+- **审批门**：docker_exec 与 docker_manage 的 stop/restart/rm 默认弹审批；headless 无审批通道时拒绝
 - **容器名校验**：只允许 `[A-Za-z0-9][A-Za-z0-9_.:-]*`，杜绝参数注入
 - **超时钳制**：单次操作 5 秒 - 10 分钟；follow 模式额外限 30 秒
 - **日志钳制**：tail 1-2000 行
@@ -78,7 +80,7 @@ docker_manage { container: web, action: restart }
 
 ```bash
 pnpm install
-pnpm test       # 构建 + 24 个测试
+pnpm test       # 构建 + 35 个测试
 ```
 
 ## License

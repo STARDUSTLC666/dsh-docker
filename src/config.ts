@@ -10,6 +10,7 @@ export interface DockerConfig {
   timeoutMs?: number
   graceMs?: number
   execApproval?: boolean
+  manageApproval?: boolean
 }
 
 /** 解析后的配置。 */
@@ -18,6 +19,7 @@ export interface ResolvedDockerConfig {
   timeoutMs: number
   graceMs: number
   execApproval: boolean
+  manageApproval: boolean
 }
 
 /**
@@ -37,7 +39,8 @@ export function resolveConfig(config: DockerConfig | undefined | null, env: Node
     graceMs = Math.min(120000, Math.max(1000, Math.round(cfg.graceMs)))
   }
   const execApproval = cfg.execApproval !== false
-  return { dockerPath, timeoutMs, graceMs, execApproval }
+  const manageApproval = cfg.manageApproval !== false
+  return { dockerPath, timeoutMs, graceMs, execApproval, manageApproval }
 }
 
 /** 校验容器名/ID，防参数注入（只允许字母数字与 _-.:/ 之外的拒绝）。 */

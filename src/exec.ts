@@ -13,7 +13,7 @@ export interface RunResult {
 }
 
 export interface ProcessRunner {
-  run(argv: readonly string[], options?: { timeoutMs?: number }): Promise<RunResult>
+  run(argv: readonly string[], options?: { timeoutMs?: number; signal?: AbortSignal }): Promise<RunResult>
 }
 
 export interface SubprocessHandleLike {
@@ -44,6 +44,9 @@ export function createSubprocessRunner(spawn: SubprocessSpawnLike, graceMs: numb
       const timeoutMs = options?.timeoutMs ?? defaultTimeoutMs
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(new Error('docker operation timed out')), timeoutMs)
+      const signal = options?.signal === undefined
+        ? controller.signal
+        : AbortSignal.any([options.signal, controller.signal])
       let handle: SubprocessHandleLike
       try {
         handle = spawn({
@@ -55,7 +58,7 @@ export function createSubprocessRunner(spawn: SubprocessSpawnLike, graceMs: numb
             stderr: { maxBytes: COLLECT_BYTES },
           },
           graceMs,
-          signal: controller.signal,
+          signal,
         })
         const outcome = await handle.done
         const stdout = handle.collected.stdout?.readFrom(0).text ?? ''

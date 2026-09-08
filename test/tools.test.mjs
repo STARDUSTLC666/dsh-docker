@@ -16,7 +16,7 @@ function makeRunner(results = []) {
 
 const cfg = resolveConfig({ timeoutMs: 30000 })
 
-test('构建 6 个工具且名字正确', () => {
+test('构建 7 个工具且名字正确', () => {
   const names = buildDockerTools(cfg, makeRunner()).map((t) => t.name).sort()
   assert.deepEqual(names, ['docker_exec', 'docker_health', 'docker_images', 'docker_inspect', 'docker_logs', 'docker_manage', 'docker_ps'])
 })

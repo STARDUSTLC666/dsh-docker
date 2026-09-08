@@ -13,6 +13,7 @@ export interface RunResult {
 export interface ProcessRunner {
     run(argv: readonly string[], options?: {
         timeoutMs?: number;
+        signal?: AbortSignal;
     }): Promise<RunResult>;
 }
 export interface SubprocessHandleLike {

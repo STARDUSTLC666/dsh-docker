@@ -9,6 +9,7 @@ export interface DockerConfig {
     timeoutMs?: number;
     graceMs?: number;
     execApproval?: boolean;
+    manageApproval?: boolean;
 }
 /** 解析后的配置。 */
 export interface ResolvedDockerConfig {
@@ -16,6 +17,7 @@ export interface ResolvedDockerConfig {
     timeoutMs: number;
     graceMs: number;
     execApproval: boolean;
+    manageApproval: boolean;
 }
 /**
  * 解析并校验配置。
