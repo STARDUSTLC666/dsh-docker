@@ -14,6 +14,8 @@ DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through 
 
 Verified with official `@deepseek-ai/dsh@0.1.5-rc.1` and Node `24.16.0` on 2026-09-11: all 18 components load alongside Modlens, with passing tool-schema, skill-registration and offline read-only invocation checks. Uses the `cordis.patch.yml` + `dsh.bundle.patch` bundle model. Node requirements match this Harness release: 22.19 or later within 22.x, or 24 or later. Live external-service workflows require separate configuration and validation.
 
+2026-09-13 fix: retain the service receiver when calling `subprocess.spawn`, preventing failures caused by passing the method as an unbound callback. Verified with official `0.1.5-rc.1` and `0.1.5-rc.2` on Node `24.16.0`. `docker_ps` passes through the real host subprocess service with a Node child producing fixed Docker output. A live Docker daemon was not used.
+
 ## Installation
 
 ```bash

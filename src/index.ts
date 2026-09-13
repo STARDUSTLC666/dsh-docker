@@ -48,7 +48,7 @@ export interface DockerPluginContext {
 export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): void {
   const cfg = resolveConfig(config)
 
-  const runner = createSubprocessRunner(ctx.subprocess.spawn, cfg.graceMs, cfg.timeoutMs)
+  const runner = createSubprocessRunner((spec) => ctx.subprocess.spawn(spec), cfg.graceMs, cfg.timeoutMs)
   const tools = buildDockerTools(cfg, runner)
   if (cfg.execApproval || cfg.manageApproval) {
     ctx.on('tools/pre-execute', async (exec, next) => {
