@@ -14,7 +14,7 @@ DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through 
 
 Validation host: Harness `0.2.0-rc.1` built from official sources (commit `407e65c8`) with Node `24.16.0` on 2026-09-28. All 36 plugin tests pass in an isolated environment; all 18 plugins mount together in one host registering 7 tools, with tool schemas and health-check contracts passing. No live ports or external services were exercised in this round.
 
-2026-09-13 fix: retain the service receiver when calling `subprocess.spawn`, preventing failures caused by passing the method as an unbound callback. Verified with official `0.1.5-rc.1` and `0.1.5-rc.2` on Node `24.16.0`. `docker_ps` passes through the real host subprocess service with a Node child producing fixed Docker output. A live Docker daemon was not used.
+2026-09-13 fix: retain the service receiver when calling `subprocess.spawn`, preventing failures caused by passing the method as an unbound callback. Verified against a real isolated host subprocess service. `docker_ps` passes through the real host subprocess service with a Node child producing fixed Docker output. A live Docker daemon was not used.
 
 ## Installation
 
