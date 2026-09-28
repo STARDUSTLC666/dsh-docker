@@ -1,6 +1,6 @@
 {
   "name": "@stardustlc/dsh-docker",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "DSH 容器与镜像管理插件：走官方 subprocess 服务，argv 无 shell 注入，exec 与破坏性操作默认审批。",
   "type": "module",
   "main": "lib/index.js",
