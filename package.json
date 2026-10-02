@@ -1,7 +1,7 @@
 {
   "name": "@stardustlc/dsh-docker",
   "version": "0.3.4",
-  "description": "DSH 容器与镜像管理插件：走官方 subprocess 服务，argv 无 shell 注入，exec 与破坏性操作默认审批。",
+  "description": "在 DSH 中查看和管理本机 Docker 容器与镜像。",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,7 +17,9 @@
     "lib",
     "cordis.patch.yml",
     "README.md",
-    "README.en.md"
+    "README.en.md",
+    "docs",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

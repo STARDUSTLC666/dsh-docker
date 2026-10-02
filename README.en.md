@@ -1,90 +1,44 @@
-[中文](README.md)
-
 # dsh-docker
 
-> **Your agent can manage containers now**: seven tools covering containers, images, logs, inspection, in-container exec, lifecycle management, and health checks.
+[中文](README.md)
 
-DSH (DeepSeek Harness) container-management plugin: runs the docker CLI through the official subprocess service with shell-free argv arrays, approval gates on `docker_exec` and destructive lifecycle actions, and **zero runtime dependencies**.
+Inspect and manage local Docker containers and images from DSH.
 
-![npm version](https://img.shields.io/npm/v/@stardustlc/dsh-docker?label=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dm/@stardustlc/dsh-docker) ![license](https://img.shields.io/npm/l/@stardustlc/dsh-docker) ![stars](https://img.shields.io/github/stars/STARDUSTLC666/dsh-docker?style=social)
+[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://img.shields.io/npm/dm/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
-[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
+## What it does
 
-## Compatibility
+- Inspect containers, images, logs and resource status.
+- Run container commands and common management operations.
+- Keep execution and destructive operations under host approval.
 
-Validation host: Harness `0.2.0-rc.1` built from official sources (commit `407e65c8`) with Node `24.16.0` on 2026-09-28. All 36 plugin tests pass in an isolated environment; all 18 plugins mount together in one host registering 7 tools, with tool schemas and health-check contracts passing. No live ports or external services were exercised in this round.
+## Install
 
-2026-09-13 fix: retain the service receiver when calling `subprocess.spawn`, preventing failures caused by passing the method as an unbound callback. Verified against a real isolated host subprocess service. `docker_ps` passes through the real host subprocess service with a Node child producing fixed Docker output. A live Docker daemon was not used.
-
-## Installation
-
-```bash
-dsh plugin --profile web add @stardustlc/dsh-docker
-```
-
-Requires Docker installed locally (`docker version` should work); use `dockerPath` when it is not on PATH.
-
-## Uninstall
+In DSH Desktop, install `@stardustlc/dsh-docker` from the Plugins panel. If the bundled dsh command is available:
 
 ```bash
-dsh plugin --profile web remove @stardustlc/dsh-docker
+dsh plugin --profile desktop add @stardustlc/dsh-docker
 ```
 
-Then restart the web service. To clean up fully, also remove the plugin entry from your profile `cordis.patch.yml` if you overrode it.
+For the web version, replace `desktop` with `web`. Restart DSH after installation.
 
+## Start using it
 
-## Configuration
+Ask: “Find out why this container exited. Start with its status and logs.”
 
-```yaml
-- id: docker
-  name: '@stardustlc/dsh-docker'
-  config:
-    # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
-    dockerPath: docker     # optional; or use the DSH_DOCKER_PATH env var
-    timeoutMs: 60000       # per-operation timeout (default 60s, 5s - 10min)
-    # execApproval: false  # disable the docker_exec approval gate (default true)
-    # manageApproval: false # disable approval for stop/restart/rm (default true; not recommended)
-```
+## Requirements and configuration
 
-## Tools
+Requires an accessible Docker CLI and Docker daemon.
 
-| Tool | Purpose | Safety |
-| :-- | :-- | :-- |
-| `docker_ps` | List containers (status/image/state, filterable) | — |
-| `docker_images` | List local images (repository/tag/size/created, dangling-only filter) | — |
-| `docker_logs` | Tail container logs (line clamp, short follow) | — |
-| `docker_inspect` | Container details (image/state/ports) | — |
-| `docker_exec` | Run a command inside a container | Approval gate + container-name validation |
-| `docker_manage` | start / stop / restart / rm | Approval gate for stop/restart/rm |
-| `docker_health` | Check Docker daemon and safety settings | — |
+Detailed configuration, tool arguments and troubleshooting are in the [usage guide](docs/USAGE.en.md). For standalone development, follow the Node requirement in [package.json](package.json).
 
-### Examples
+## Documentation
 
-```text
-docker_ps {}
-docker_ps { all: true, name: web }
-docker_images { dangling: true }
-docker_logs { container: web, tail: 200 }
-docker_inspect { container: web }
-docker_exec { container: web, command: 'df -h' }
-docker_manage { container: web, action: restart }
-```
-
-## Safety
-
-- **No shell**: every argument is its own argv element — command injection is impossible
-- **Approval gates**: docker_exec and docker_manage stop/restart/rm ask first; headless environments without an approval channel are denied
-- **Container-name validation**: only `[A-Za-z0-9][A-Za-z0-9_.:-]*` accepted — no argument injection
-- **Timeout clamps**: 5s - 10min per operation; follow mode capped at an extra 30s
-- **Log clamping**: tail 1-2000 lines
-
-## Development
-
-```bash
-pnpm install
-pnpm test       # build + 35 tests
-```
+- [Usage and troubleshooting](docs/USAGE.en.md)
+- [Changelog](CHANGELOG.md)
+- [Validation scope and history](docs/VALIDATION.md)
+- [Report a problem or suggest a feature](https://github.com/STARDUSTLC666/dsh-docker/issues)
 
 ## License
 
-MIT
+[MIT](LICENSE)
