@@ -2,6 +2,8 @@
 
 [中文](README.md)
 
+![dsh-docker whale girl plugin cover](https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/assets/cover-whale-girl.png)
+
 Inspect and manage local Docker containers and images from DSH.
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://img.shields.io/npm/dm/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker)

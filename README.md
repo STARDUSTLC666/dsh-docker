@@ -2,6 +2,8 @@
 
 [English](README.en.md)
 
+![dsh-docker 鲸鱼娘插件封面](https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/assets/cover-whale-girl.png)
+
 在 DSH 中查看和管理本机 Docker 容器与镜像。
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://img.shields.io/npm/dm/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
