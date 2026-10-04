@@ -6,7 +6,7 @@
 
 Inspect and manage local Docker containers and images from DSH.
 
-[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://img.shields.io/npm/dm/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
+[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
 ## What it does
 
