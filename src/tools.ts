@@ -35,7 +35,6 @@ function compileParameters(spec: Record<string, any>): { type: 'object'; propert
     if (typeof prop?.type === 'string') node.type = prop.type
     if (typeof prop?.description === 'string') node.description = prop.description
     if (prop?.items) node.items = prop.items
-    if (typeof prop?.maxItems === 'number') node.maxItems = prop.maxItems
     properties[key] = node
   }
   return { type: 'object', properties, ...(required.length > 0 ? { required } : {}) }
@@ -235,7 +234,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
     parameters: compileParameters({
       container: { type: 'string', required: true, description: '容器名或 ID（必填）。' },
       command: { type: 'string', description: '命令字符串，如 ls -la；与 argv 二选一。' },
-      argv: { type: 'array', items: { type: 'string' }, maxItems: 128, description: '精确命令参数，如 ["sh", "-c", "cat /etc/hosts"]；与 command 二选一。' },
+      argv: { type: 'array', items: { type: 'string' }, description: '精确命令参数，最多 128 项，如 ["sh", "-c", "cat /etc/hosts"]；与 command 二选一。' },
     }),
     output: {
       schema: execSchema,
