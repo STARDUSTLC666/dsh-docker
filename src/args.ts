@@ -41,8 +41,25 @@ export function manageArgs(docker: string, action: 'start' | 'stop' | 'restart' 
 
 /** 拆分 exec 的命令字符串（按空白，支持引号）。 */
 export function splitCommand(command: string): string[] {
+  if (command.length > 32768 || command.includes('\0')) throw new Error('命令超过 32768 字符或含 NUL；请检查输入。')
   const parts: string[] = []
-  const matches = command.match(/"[^"]*"|'[^']*'|\S+/g)
-  if (matches === null) return []
-  return matches.map((part) => part.replace(/^["']|["']$/g, ''))
+  let token = '', started = false, quote = ''
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i]!
+    if (quote === "'") { if (ch === "'") quote = ''; else token += ch; continue }
+    if (ch === '\\' && quote !== "'") {
+      const next = command[i + 1]
+      if (next === undefined) throw new Error('命令末尾的转义未完成，请使用 argv 传递原始参数。')
+      if (quote === '"' && !['"', '\\', '$', '`', '\n'].includes(next)) token += ch
+      else { i++; if (next !== '\n') token += next }
+      started = true; continue
+    }
+    if (quote === '"') { if (ch === '"') quote = ''; else token += ch; continue }
+    if (ch === '"' || ch === "'") { quote = ch; started = true; continue }
+    if (/\s/.test(ch)) { if (started) { parts.push(token); token = ''; started = false }; continue }
+    token += ch; started = true
+  }
+  if (quote) throw new Error('命令引号未闭合，请修正或使用 argv 参数数组。')
+  if (started) parts.push(token)
+  return parts
 }

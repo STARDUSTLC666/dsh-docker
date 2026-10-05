@@ -77,6 +77,23 @@ test('docker_exec：命令拆分 + 容器名校验', async () => {
   await assert.rejects(() => execTool.execute({ container: 'web', command: '   ' }), /为必填|不能为空/)
 })
 
+test('docker_exec argv 精确保留参数；二选一与取消在启动前检查', async () => {
+  const runner = makeRunner(), { calls } = runner
+  const tool = buildDockerTools(cfg, runner).find(t => t.name === 'docker_exec')
+  const argv = ['printf', '%s', '', 'a b', 'a"b', '$HOME']
+  await tool.execute({ container: 'web', argv })
+  assert.deepEqual(calls.at(-1).argv.slice(3), argv)
+  for (const args of [{}, { command: 'echo hi', argv }, { argv: [] }, { argv: [1] }, { argv: [''] }, { argv: ['echo', 'bad\0value'] }, { command: 'echo "open' }]) {
+    const before = calls.length
+    await assert.rejects(tool.execute({ container: 'web', ...args }))
+    assert.equal(calls.length, before)
+  }
+  const controller = new AbortController(); controller.abort(new Error('cancel before docker'))
+  const before = calls.length
+  await assert.rejects(tool.execute({ container: 'web', argv }, { signal: controller.signal }), /cancel before docker/)
+  assert.equal(calls.length, before)
+})
+
 test('docker_manage：action 校验', async () => {
   const runner = makeRunner([{}])
   const manage = buildDockerTools(cfg, runner).find((t) => t.name === 'docker_manage')

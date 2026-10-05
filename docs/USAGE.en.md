@@ -2,6 +2,10 @@
 
 [Overview](../README.en.md) · [Changelog](../CHANGELOG.md) · [Validation](VALIDATION.md)
 
+## Current improvements
+
+Prefer docker_exec with container="web" and argv=["printf","%s","a b"]. Supply exactly one of command or argv. The host performs no variable, pipe or command-substitution expansion. Explicit container shell calls such as ["sh","-c","..."] remain approval-gated.
+
 ## Installation
 
 ```bash

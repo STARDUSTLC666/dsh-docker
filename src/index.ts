@@ -54,7 +54,7 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
     ctx.on('tools/pre-execute', async (exec, next) => {
       const args = (typeof exec.arguments === 'object' && exec.arguments !== null ? exec.arguments : {}) as Record<string, unknown>
       if (exec.name === 'docker_exec' && cfg.execApproval) {
-        const command = typeof args.command === 'string' ? args.command : ''
+        const command = Array.isArray(args.argv) ? JSON.stringify(args.argv) : typeof args.command === 'string' ? args.command : ''
         const container = typeof args.container === 'string' ? args.container : ''
         return {
           kind: 'ask',

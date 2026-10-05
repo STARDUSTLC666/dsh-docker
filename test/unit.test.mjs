@@ -33,6 +33,13 @@ test('splitCommand：空白拆分 + 引号', () => {
   assert.deepEqual(splitCommand(''), [])
 })
 
+test('命令解析保留空参数、相邻引号和原样变量，不执行展开', () => {
+  assert.deepEqual(splitCommand(`printf "%s" '' "a b" pre"middle value"post '$HOME'`), ['printf', '%s', '', 'a b', 'premiddle valuepost', '$HOME'])
+  assert.deepEqual(splitCommand(String.raw`echo a\ b "a\"b"`), ['echo', 'a b', 'a"b'])
+  assert.throws(() => splitCommand('echo "unfinished'), /引号未闭合/)
+  assert.throws(() => splitCommand('echo trailing' + '\\'), /转义未完成/)
+})
+
 test('parsePsJson：docker ps JSON 行', () => {
   const lines = [
     JSON.stringify({ ID: 'abc123', Names: 'web-1', Image: 'nginx:latest', Status: 'Up 3 hours', State: 'running' }),

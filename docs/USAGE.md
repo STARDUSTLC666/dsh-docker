@@ -2,6 +2,10 @@
 
 [返回简介](../README.md) · [更新记录](../CHANGELOG.md) · [验证记录](VALIDATION.md)
 
+## 本次改进
+
+推荐 docker_exec { container: "web", argv: ["printf", "%s", "a b"] }。command 与 argv 二选一；宿主不执行变量、管道或命令替换。确需容器 Shell 时显式使用 ["sh", "-c", "..."]，仍需审批。
+
 ## 安装
 
 ```bash

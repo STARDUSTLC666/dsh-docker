@@ -49,6 +49,7 @@ export function createSubprocessRunner(spawn: SubprocessSpawnLike, graceMs: numb
         : AbortSignal.any([options.signal, controller.signal])
       let handle: SubprocessHandleLike
       try {
+        signal.throwIfAborted()
         handle = spawn({
           argv,
           cwd: process.cwd(),
@@ -61,6 +62,7 @@ export function createSubprocessRunner(spawn: SubprocessSpawnLike, graceMs: numb
           signal,
         })
         const outcome = await handle.done
+        signal.throwIfAborted()
         const stdout = handle.collected.stdout?.readFrom(0).text ?? ''
         const stderr = handle.collected.stderr?.readFrom(0).text ?? ''
         return { exitCode: outcome.exitCode, signal: outcome.signal, stdout, stderr }
