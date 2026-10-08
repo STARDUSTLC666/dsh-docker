@@ -8,6 +8,8 @@
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
+欢迎使用，遇到问题或有改进建议，请提交 [issues](https://github.com/STARDUSTLC666/dsh-docker/issues) 和 [PR](https://github.com/STARDUSTLC666/dsh-docker/pulls)。
+
 ## 功能
 
 - 查看容器、镜像、日志和资源状态。
