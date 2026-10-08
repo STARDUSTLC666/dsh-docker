@@ -83,7 +83,7 @@ test('docker_exec argv 精确保留参数；二选一与取消在启动前检查
   const argv = ['printf', '%s', '', 'a b', 'a"b', '$HOME']
   await tool.execute({ container: 'web', argv })
   assert.deepEqual(calls.at(-1).argv.slice(3), argv)
-  for (const args of [{}, { command: 'echo hi', argv }, { argv: [] }, { argv: [1] }, { argv: [''] }, { argv: ['echo', 'bad\0value'] }, { command: 'echo "open' }]) {
+  for (const args of [{}, { command: 'echo hi', argv }, { argv: [] }, { argv: [1] }, { argv: [''] }, { argv: Array(129).fill('echo') }, { argv: ['echo', 'x'.repeat(32768)] }, { argv: ['echo', 'bad\0value'] }, { command: 'echo "open' }]) {
     const before = calls.length
     await assert.rejects(tool.execute({ container: 'web', ...args }))
     assert.equal(calls.length, before)
