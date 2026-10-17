@@ -1,6 +1,6 @@
 {
   "name": "@stardustlc/dsh-docker",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "在 DSH 中查看和管理本机 Docker 容器与镜像。",
   "type": "module",
   "main": "lib/index.js",
@@ -57,5 +57,8 @@
   },
   "homepage": "https://github.com/STARDUSTLC666/dsh-docker#readme",
   "author": "stardustlc",
-  "packageManager": "pnpm@11.7.0"
+  "packageManager": "pnpm@11.7.0",
+  "publishConfig": {
+    "access": "public"
+  }
 }

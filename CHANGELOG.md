@@ -2,6 +2,9 @@
 
 [返回简介](README.md) · [使用说明](docs/USAGE.md) · [验证记录](docs/VALIDATION.md)
 
+## 0.4.2（2026-10-17）
+
+- 补 `publishConfig.access: "public"`：与其余 scoped 包保持一致，避免发布时因默认 restricted 访问级别失败（不影响运行时行为）。
 ## 0.4.1 (2026-10-05)
 
 - 修复旧版 DSH 生成 PTC SDK 时不支持的数组约束；仍在执行前严格限制 argv 的 128 项与总长度，保留精确参数和审批。
