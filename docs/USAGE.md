@@ -2,6 +2,10 @@
 
 [返回简介](../README.md) · [更新记录](../CHANGELOG.md) · [验证记录](VALIDATION.md)
 
+## 确认与 never 策略
+
+execApproval 和 manageApproval 默认开启。宿主 never 策略会拒绝所有需要询问的请求；它不代表允许全部执行。若需要确认，切换至可询问策略；只有用户明确接受风险时，才分别关闭对应的插件确认门。docker_health 会显示实际策略，且继续检测 Docker daemon。
+
 ## 本次改进
 
 推荐 docker_exec { container: "web", argv: ["printf", "%s", "a b"] }。command 与 argv 二选一；宿主不执行变量、管道或命令替换。确需容器 Shell 时显式使用 ["sh", "-c", "..."]，仍需审批。

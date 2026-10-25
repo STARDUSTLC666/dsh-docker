@@ -16,6 +16,7 @@ test('docker_health preserves the subprocess service receiver', async (t) => {
     },
   }
   apply({
+    approval: { config: { policy: 'ask' } },
     subprocess: service,
     tools: { register(definition) { definitions.set(definition.name, definition); return () => {} } },
     on() {},

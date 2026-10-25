@@ -1,5 +1,6 @@
 import { type ResolvedDockerConfig } from './config.js';
 import { type ProcessRunner } from './exec.js';
+import { type DockerApprovalPolicy } from './approval.js';
 export interface ContentBlock {
     type: 'text';
     text: string;
@@ -20,4 +21,4 @@ export interface DockerToolDefinition {
     timeoutMs?: number;
 }
 /** 构建七个工具定义。 */
-export declare function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRunner): DockerToolDefinition[];
+export declare function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRunner, policyOf?: (execution: unknown) => DockerApprovalPolicy): DockerToolDefinition[];

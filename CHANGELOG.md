@@ -2,6 +2,11 @@
 
 [返回简介](README.md) · [使用说明](docs/USAGE.md) · [验证记录](docs/VALIDATION.md)
 
+## 0.4.3（2026-10-26）
+
+- 确认门读取宿主当前会话的真实审批策略；never 模式不再被误报为用户拒绝，自检明确显示无法询问的原因与解决选项。默认确认保护保持启用。
+- Windows 回归 41 项通过、0 项跳过；宿主与未验收范围见[本次记录](docs/validation-0.4.3.md)。
+
 ## 0.4.2（2026-10-17）
 
 - 补 `publishConfig.access: "public"`：与其余 scoped 包保持一致，避免发布时因默认 restricted 访问级别失败（不影响运行时行为）。

@@ -54,7 +54,7 @@ test('docker_exec 与破坏性 docker_manage 返回 ask，安全操作继续 wat
   assert.equal(ask.kind, 'ask')
   assert.ok(ask.reason.includes('web'))
   assert.ok(ask.reason.includes('ls -la'))
-  assert.equal(delegated, false)
+  assert.equal(delegated, true)
 
   const manageAsk = await preExecute(
     { name: 'docker_manage', arguments: { container: 'web', action: 'rm' } },

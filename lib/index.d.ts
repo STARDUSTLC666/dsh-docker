@@ -10,6 +10,7 @@
 import { type DockerConfig } from './config.js';
 import { type SubprocessSpawnLike } from './exec.js';
 import { type DockerToolDefinition } from './tools.js';
+import { type DockerApprovalService } from './approval.js';
 /** cordis 服务注入：apply 里要用 ctx.subprocess 与 ctx.tools。 */
 export declare const name = "docker";
 export declare const inject: string[];
@@ -32,6 +33,8 @@ interface DockerToolExecution {
 type DockerPreExecuteListener = (exec: DockerToolExecution, next: () => Promise<DockerPreToolDecision>) => Promise<DockerPreToolDecision>;
 /** 插件所需的最小 ctx 面。 */
 export interface DockerPluginContext {
+    approval?: DockerApprovalService;
+    get?(name: string): unknown;
     subprocess: {
         spawn: SubprocessSpawnLike;
     };
@@ -50,3 +53,4 @@ export * from './config.js';
 export * from './exec.js';
 export * from './parse.js';
 export * from './tools.js';
+export * from './approval.js';

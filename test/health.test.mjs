@@ -6,7 +6,7 @@ const cfg = resolveConfig({ timeoutMs: 30000 })
 
 test('docker_health 守护进程可达时 ok=true', async () => {
   const runner = { async run() { return { exitCode: 0, signal: null, stdout: '27.1.1', stderr: '' } } }
-  const health = buildDockerTools(cfg, runner).find((t) => t.name === 'docker_health')
+  const health = buildDockerTools(cfg, runner, () => 'ask').find((t) => t.name === 'docker_health')
   const value = await health.execute({})
   assert.equal(value.ok, true)
   assert.match(String(value.checks[0].detail), /27\.1\.1/)

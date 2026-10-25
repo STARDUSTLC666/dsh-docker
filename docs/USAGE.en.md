@@ -2,6 +2,10 @@
 
 [Overview](../README.en.md) · [Changelog](../CHANGELOG.md) · [Validation](VALIDATION.md)
 
+## Confirmation and never policy
+
+execApproval and manageApproval stay enabled by default. The host never policy rejects requests that require asking; it does not grant all actions. Select an asking policy, or explicitly disable the relevant plugin gate if the user chooses to do so. docker_health reports the effective policy and still probes the daemon.
+
 ## Current improvements
 
 Prefer docker_exec with container="web" and argv=["printf","%s","a b"]. Supply exactly one of command or argv. The host performs no variable, pipe or command-substitution expansion. Explicit container shell calls such as ["sh","-c","..."] remain approval-gated.

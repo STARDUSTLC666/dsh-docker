@@ -8,6 +8,7 @@ import { imagesArgs, inspectArgs, logsArgs, manageArgs, execArgs, psArgs, splitC
 import { assertContainerRef, type ResolvedDockerConfig } from './config.js'
 import { type ProcessRunner, type RunResult } from './exec.js'
 import { parseImagesJson, parseInspectJson, parsePsJson } from './parse.js'
+import { dockerApprovalCheck, type DockerApprovalPolicy } from './approval.js'
 
 export interface ContentBlock {
   type: 'text'
@@ -115,7 +116,7 @@ const manageSchema = {
 }
 
 /** 构建七个工具定义。 */
-export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRunner): DockerToolDefinition[] {
+export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRunner, policyOf: (execution: unknown) => DockerApprovalPolicy = () => 'unknown'): DockerToolDefinition[] {
   const cfg = config
   const timeout = cfg.timeoutMs
 
@@ -292,7 +293,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         const lines = ['dsh-docker 自检' + (rec.ok === true ? '：正常。' : '：发现问题。')]
         for (const item of checks) {
           const c = asRecord(item)
-          lines.push('- ' + c.name + '：' + (c.ok === true ? '✅' : '❌ ' + String(c.detail ?? '')))
+          lines.push('- ' + c.name + '：' + (c.ok === true ? '✅ ' : '❌ ') + String(c.detail ?? ''))
         }
         return [{ type: 'text', text: lines.join('\n') }]
       },
@@ -308,10 +309,11 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
         ok = false
         checks.push({ name: 'docker daemon', ok: false, detail: error instanceof Error ? error.message : String(error) })
       }
-      checks.push({ name: 'exec 审批门', ok: true, detail: cfg.execApproval === true ? '开启' : '关闭' })
-      checks.push({ name: 'manage 审批门', ok: true, detail: cfg.manageApproval === true ? '开启' : '关闭' })
+      const policy = policyOf(exec)
+      checks.push({ name: 'exec 审批门', ...dockerApprovalCheck(cfg.execApproval, policy, 'execApproval') })
+      checks.push({ name: 'manage 审批门', ...dockerApprovalCheck(cfg.manageApproval, policy, 'manageApproval') })
       checks.push({ name: '超时配置', ok: true, detail: 'timeoutMs=' + cfg.timeoutMs + ', graceMs=' + cfg.graceMs })
-      return { ok, plugin: 'dsh-docker', checks }
+      return { ok: ok && checks.every(check => check.ok === true), plugin: 'dsh-docker', approvalPolicy: policy, checks }
     },
     timeoutMs: 20000,
   }

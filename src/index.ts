@@ -11,6 +11,7 @@
 import { resolveConfig, type DockerConfig } from './config.js'
 import { createSubprocessRunner, type SubprocessSpawnLike } from './exec.js'
 import { buildDockerTools, type DockerToolDefinition } from './tools.js'
+import { dockerApprovalPolicy, dockerApprovalCheck, type DockerApprovalService } from './approval.js'
 
 /** cordis 服务注入：apply 里要用 ctx.subprocess 与 ctx.tools。 */
 export const name = 'docker'
@@ -36,6 +37,8 @@ type DockerPreExecuteListener = (
 
 /** 插件所需的最小 ctx 面。 */
 export interface DockerPluginContext {
+  approval?: DockerApprovalService
+  get?(name: string): unknown
   subprocess: { spawn: SubprocessSpawnLike }
   tools: { register(definition: DockerToolDefinition): () => void }
   on(event: 'tools/pre-execute', listener: DockerPreExecuteListener): () => void
@@ -49,11 +52,17 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
   const cfg = resolveConfig(config)
 
   const runner = createSubprocessRunner((spec) => ctx.subprocess.spawn(spec), cfg.graceMs, cfg.timeoutMs)
-  const tools = buildDockerTools(cfg, runner)
+  const policyOf = (execution: unknown) => dockerApprovalPolicy((ctx.get ? ctx.get('approval') : ctx.approval) as DockerApprovalService | undefined, execution)
+  const tools = buildDockerTools(cfg, runner, policyOf)
   if (cfg.execApproval || cfg.manageApproval) {
     ctx.on('tools/pre-execute', async (exec, next) => {
+      // Preserve denials from the remaining host waterfall before adding a question.
+      const downstream = await next()
+      if (downstream.kind === 'deny') return downstream
       const args = (typeof exec.arguments === 'object' && exec.arguments !== null ? exec.arguments : {}) as Record<string, unknown>
       if (exec.name === 'docker_exec' && cfg.execApproval) {
+        const policy = policyOf(exec)
+        if (policy === 'never') return { kind: 'deny', reason: dockerApprovalCheck(true, policy, 'execApproval').detail }
         const command = Array.isArray(args.argv) ? JSON.stringify(args.argv) : typeof args.command === 'string' ? args.command : ''
         const container = typeof args.container === 'string' ? args.container : ''
         return {
@@ -64,6 +73,8 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
       if (exec.name === 'docker_manage' && cfg.manageApproval) {
         const action = typeof args.action === 'string' ? args.action : ''
         if (action === 'stop' || action === 'restart' || action === 'rm') {
+          const policy = policyOf(exec)
+          if (policy === 'never') return { kind: 'deny', reason: dockerApprovalCheck(true, policy, 'manageApproval').detail }
           const container = typeof args.container === 'string' ? args.container : ''
           return {
             kind: 'ask',
@@ -71,7 +82,7 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
           }
         }
       }
-      return next()
+      return downstream
     })
   }
 
@@ -89,3 +100,4 @@ export * from './config.js'
 export * from './exec.js'
 export * from './parse.js'
 export * from './tools.js'
+export * from './approval.js'
