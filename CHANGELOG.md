@@ -2,6 +2,12 @@
 
 [返回简介](README.md) · [使用说明](docs/USAGE.md) · [验证记录](docs/VALIDATION.md)
 
+## 0.5.0 (2026-10-26)
+
+- Add this plugin’s own update controls and independent preferences. Automatic installation stays off until explicitly enabled.
+- Confirm manual installs, preserve local sources and disabled state, pause for tasks or unsaved changes, and use native DSH recovery without forced restarts.
+- Require the public DSH 0.2.1-rc.3 update APIs; Suite components remain managed through Suite.
+
 ## 0.4.3（2026-10-26）
 
 - 确认门读取宿主当前会话的真实审批策略；never 模式不再被误报为用户拒绝，自检明确显示无法询问的原因与解决选项。默认确认保护保持启用。

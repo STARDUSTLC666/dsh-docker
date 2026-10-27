@@ -18,9 +18,9 @@ test('cordis.patch.yml 插入行名为 dsh-docker', () => {
   assert.match(patch, /- insert:/)
 })
 
-test('零运行时依赖 + 名称版本', () => {
+test('宿主操作无额外引擎依赖，更新控件使用共享库 + 名称版本', () => {
   const pkg = require('../package.json')
-  assert.equal(pkg.dependencies, undefined)
+  assert.deepEqual(pkg.dependencies, { '@stardustlc/dsh-updates': '0.1.0' })
   assert.equal(pkg.name, '@stardustlc/dsh-docker')
   assert.match(pkg.version, /^\d+\.\d+\.\d+$/)
 })
