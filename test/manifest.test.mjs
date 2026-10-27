@@ -20,7 +20,8 @@ test('cordis.patch.yml 插入行名为 dsh-docker', () => {
 
 test('宿主操作无额外引擎依赖，更新控件使用共享库 + 名称版本', () => {
   const pkg = require('../package.json')
-  assert.deepEqual(pkg.dependencies, { '@stardustlc/dsh-updates': '0.1.0' })
+  assert.deepEqual(Object.keys(pkg.dependencies), ['@stardustlc/dsh-updates'])
+  assert.match(pkg.dependencies['@stardustlc/dsh-updates'], /^\d+\.\d+\.\d+$/, 'Shared update dependency must be pinned exactly')
   assert.equal(pkg.name, '@stardustlc/dsh-docker')
   assert.match(pkg.version, /^\d+\.\d+\.\d+$/)
 })

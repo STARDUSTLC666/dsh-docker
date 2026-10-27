@@ -1,6 +1,6 @@
 {
   "name": "@stardustlc/dsh-docker",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "在 DSH 中查看和管理本机 Docker 容器与镜像。",
   "type": "module",
   "main": "lib/index.js",
@@ -72,6 +72,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@stardustlc/dsh-updates": "0.1.0"
+    "@stardustlc/dsh-updates": "0.1.1"
   }
 }
