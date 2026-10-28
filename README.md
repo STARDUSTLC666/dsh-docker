@@ -4,7 +4,7 @@
 
 ![dsh-docker 鲸鱼娘插件封面](https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/assets/cover-whale-girl.png)
 
-在 DSH 中查看和管理本机 Docker 容器与镜像。
+在 DSH 中查看和管理本机 Docker 容器与镜像，读取日志、检查状态并执行受配置约束的操作。健康检查区分引擎连接与操作确认是否可用。
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 

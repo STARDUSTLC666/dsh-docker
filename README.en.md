@@ -4,7 +4,7 @@
 
 ![dsh-docker whale girl plugin cover](https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/assets/cover-whale-girl.png)
 
-Inspect and manage local Docker containers and images from DSH.
+Inspect and manage local Docker containers and images from DSH, read logs and run operations under the configured controls. Health checks distinguish engine connectivity from approval availability.
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
