@@ -6,7 +6,9 @@
 
 Inspect and manage local Docker containers and images from DSH, read logs and run operations under the configured controls. Health checks distinguish engine connectivity from approval availability.
 
-[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
+[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![total downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-total-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
+
+[Download statistics](https://github.com/STARDUSTLC666/dsh-suite/blob/npm-downloads/README.md)
 
 Feedback and contributions are welcome: report [issues](https://github.com/STARDUSTLC666/dsh-docker/issues) or submit [pull requests](https://github.com/STARDUSTLC666/dsh-docker/pulls).
 
@@ -28,7 +30,10 @@ For the web version, replace `desktop` with `web`. Restart DSH after installatio
 
 ## Start using it
 
-Ask: “Find out why this container exited. Start with its status and logs.”
+1. Start Docker Engine and confirm your user can access it through Docker commands.
+2. List containers and images in DSH; select a target and inspect its status and logs.
+3. Before starting, stopping or cleaning up, check the target and consequences, then confirm.
+4. Recheck the result. Investigate actual permission or connection errors instead of treating an unexecuted action as success.
 
 ## Requirements and configuration
 

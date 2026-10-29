@@ -6,7 +6,9 @@
 
 在 DSH 中查看和管理本机 Docker 容器与镜像，读取日志、检查状态并执行受配置约束的操作。健康检查区分引擎连接与操作确认是否可用。
 
-[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
+[![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![total downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-total-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
+
+[下载统计说明](https://github.com/STARDUSTLC666/dsh-suite/blob/npm-downloads/README.md)
 
 欢迎使用，遇到问题或有改进建议，请提交 [issues](https://github.com/STARDUSTLC666/dsh-docker/issues) 和 [PR](https://github.com/STARDUSTLC666/dsh-docker/pulls)。
 
@@ -28,7 +30,10 @@ dsh plugin --profile desktop add @stardustlc/dsh-docker
 
 ## 开始使用
 
-安装后可说：“检查这个容器为什么退出，先查看状态和日志。”
+1. 启动 Docker Engine，确认当前用户可通过 Docker 命令访问引擎。
+2. 在 DSH 中先列出容器和镜像，选择具体目标，读取状态与日志。
+3. 需要启动、停止或清理时，先核对目标名称及影响，再确认操作。
+4. 操作后重新检查状态；权限或连接失败时按实际错误排查，不把未执行视为成功。
 
 ## 依赖与配置
 
