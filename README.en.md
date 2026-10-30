@@ -1,32 +1,35 @@
-# dsh-docker
+[简体中文](README.md) · **English**
 
-[中文](README.md)
+# Docker
 
-![dsh-docker whale girl plugin cover](https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/assets/cover-whale-girl.png)
-
-Inspect and manage local Docker containers and images from DSH, read logs and run operations under the configured controls. Health checks distinguish engine connectivity from approval availability.
+**Inspect containers and diagnose problems from DSH.**
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![total downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-total-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
-[Download statistics](https://github.com/STARDUSTLC666/dsh-suite/blob/npm-downloads/README.md)
+**[Install](#install) · [Workflow](#start-using-it) · [Full guide](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md)**
 
-Feedback and contributions are welcome: report [issues](https://github.com/STARDUSTLC666/dsh-docker/issues) or submit [pull requests](https://github.com/STARDUSTLC666/dsh-docker/pulls).
+<picture>
+  <source media="(prefers-color-scheme: dark) and (max-width: 640px)" srcset="https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/docs/assets/intro/workflow-en-mobile-dark.svg">
+  <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/docs/assets/intro/workflow-en-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/docs/assets/intro/workflow-en-dark.svg">
+  <img src="https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/docs/assets/intro/workflow-en-light.svg" alt="Inspect containers and diagnose problems from DSH. · workflow illustration" width="100%">
+</picture>
 
-## What it does
+## Features
 
-- Inspect containers, images, logs and resource status.
-- Run container commands and common management operations.
-- Keep execution and destructive operations under host approval.
+- Inspect containers, images and resource status.
+- Read logs or run controlled commands against a specific target.
+- Review the impact of start, stop and cleanup actions.
 
 ## Install
 
-In DSH Desktop, install `@stardustlc/dsh-docker` from the Plugins panel. If the bundled dsh command is available:
+Open **Plugins** in the DSH desktop app and install `@stardustlc/dsh-docker`. If the CLI is available:
 
 ```bash
 dsh plugin --profile desktop add @stardustlc/dsh-docker
 ```
 
-For the web version, replace `desktop` with `web`. Restart DSH after installation.
+For the web profile, replace `desktop` with `web`. Restart that DSH profile after installation. The package’s DSH requirement is `>=0.2.1-rc.3`.
 
 ## Start using it
 
@@ -35,25 +38,33 @@ For the web version, replace `desktop` with `web`. Restart DSH after installatio
 3. Before starting, stopping or cleaning up, check the target and consequences, then confirm.
 4. Recheck the result. Investigate actual permission or connection errors instead of treating an unexecuted action as success.
 
-## Requirements and configuration
+Example request：
 
-Requires an accessible Docker CLI and Docker daemon.
+> Check the Docker engine, list containers and read this container’s recent logs without changing anything.
 
-Detailed configuration, tool arguments and troubleshooting are in the [usage guide](docs/USAGE.en.md). For standalone development, follow the Node requirement in [package.json](package.json).
+## Before you start
 
-## Documentation
+Requires a running Docker Engine accessible to the current user. Actions follow host approval.
 
-- [Usage and troubleshooting](docs/USAGE.en.md)
-- [Changelog](CHANGELOG.md)
-- [Validation scope and history](docs/VALIDATION.md)
-- [Report a problem or suggest a feature](https://github.com/STARDUSTLC666/dsh-docker/issues)
+Configuration, detailed tools and troubleshooting: [full reference](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md).
 
 ## Plugin updates
 
-Requires DSH 0.2.1-rc.3 or newer. Update controls sit at the bottom of the existing workbench, or native plugin details for plugins without a workbench. Checks, release notes and preferences expand in place, with no separate update page or settings menu. Automatic checks are on by default; **automatic installation is off by default**. Only explicit opt-in permits compatible stable patches while idle with no unsaved changes. Preferences are independent, with per-plugin disable, deferral and ignore controls. No forced DSH restart or upgrade, and local-source installations stay unchanged. Suite components explain and operate on the whole Suite in the same footer.
+Check updates at the bottom of the workbench or native plugin details. Automatic checks are on by default; **automatic installation is off**. You choose whether to install and when to restart. Suite-managed components update with their bundle. [Update behavior](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md).
 
-Older releases need one manual update in native plugin management to acquire these controls. Publishing to npm does not replace an existing user installation.
+## Documentation
+
+- [Full usage, configuration and limits](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md)
+- [Release notes](https://github.com/STARDUSTLC666/dsh-docker/blob/master/CHANGELOG.md)
+- [Validation scope and history](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/VALIDATION.md)
+
+## Feedback and contributions
+
+If the plugin helps, a Star makes it easier for others to discover. Report problems or suggest improvements in [Issues](https://github.com/STARDUSTLC666/dsh-docker/issues); code and documentation [PRs](https://github.com/STARDUSTLC666/dsh-docker/pulls) are welcome. Include versions and reproduction steps, and remove credentials from reports.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/STARDUSTLC666/dsh-docker/blob/master/LICENSE)
+
+<a id="what-it-does"></a>
+<a id="requirements-and-configuration"></a>

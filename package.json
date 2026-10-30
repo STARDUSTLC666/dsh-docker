@@ -1,7 +1,7 @@
 {
   "name": "@stardustlc/dsh-docker",
-  "version": "0.5.6",
-  "description": "DSH Docker 工具：容器与镜像管理、日志、状态检查及操作确认；清楚报告权限原因。欢迎提交 issues 和 PR。",
+  "version": "0.5.7",
+  "description": "在 DSH 里看容器状态、读日志、处理问题。 需要已运行且当前用户可访问的 Docker Engine 欢迎提交 issues 和 PR。",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
