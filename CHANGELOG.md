@@ -1,5 +1,10 @@
 # 更新记录
 
+## 0.5.7 (2026-11-03)
+
+- 按 daemon、权限、CLI、无容器、端口冲突、超时区分失败并给下一步；空容器与空日志补指引。
+- Failures distinguish daemon, permission, CLI, missing container, port conflict and timeout with next steps; empty containers and logs are explained.
+
 ## 0.5.6 (2026-10-30)
 
 - 原生插件列表与详情新增专门生成的鲸鱼娘图标：大头像、独立功能符号、透明留白，适合 30 / 36 px 显示；原封面保留。
