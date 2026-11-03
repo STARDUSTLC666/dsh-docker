@@ -78,6 +78,20 @@ pnpm install
 pnpm test       # 构建并执行测试
 ```
 
+## 故障排查
+
+先运行 `docker_health`：它检查 `docker version`、exec/manage 审批门与超时配置，失败项后面会直接给出下一步。
+
+| 现象 | 常见原因 | 处理 |
+| :-- | :-- | :-- |
+| `Cannot connect to the Docker daemon` | 守护进程没启动 | 启动 Docker Desktop / dockerd；Windows 需要 WSL2 或 Hyper-V 后端 |
+| `permission denied … docker.sock` | 当前用户不在 docker 组 | Linux/macOS 加入 docker 组后重新登录；Windows 以管理员身份启动 Docker Desktop |
+| `docker: command not found` | PATH 里没有 docker | 安装 Docker CLI，或在插件配置里用 `dockerPath` 指定完整路径 |
+| `No such container` / `No such image` | 名字或 ID 写错，对象已被删除 | 用 `docker_ps all=true` / `docker_images` 查真实名字 |
+| `port is already allocated` | 端口被其它容器占用 | 先 `docker_ps` 找到占用者并停止，或改用其它端口 |
+| `docker logs` 输出为空 | 进程还没输出，或日志驱动不是 json-file | 用 `docker_inspect` 看状态与启动时间，再调大 `tail` |
+| 命令超时 | 目标繁忙或网络慢 | 确认容器/主机状态后调大 `timeoutMs` 重试 |
+
 ## License
 
 MIT

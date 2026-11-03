@@ -78,6 +78,20 @@ pnpm install
 pnpm test       # build + 35 tests
 ```
 
+## Troubleshooting
+
+Run `docker_health` first: it checks `docker version`, the exec/manage approval gates, and timeout settings, and each failing check carries the next step.
+
+| Symptom | Usual cause | What to do |
+| :-- | :-- | :-- |
+| `Cannot connect to the Docker daemon` | Daemon not running | Start Docker Desktop / dockerd; on Windows use the WSL2 or Hyper-V backend |
+| `permission denied … docker.sock` | Current user is not in the docker group | Add the user to the docker group and re-login (Linux/macOS); on Windows run Docker Desktop as administrator |
+| `docker: command not found` | docker is not on PATH | Install the Docker CLI, or point `dockerPath` at the full executable path |
+| `No such container` / `No such image` | Wrong name/ID, or the object was removed | Use `docker_ps all=true` / `docker_images` to find the real name |
+| `port is already allocated` | Another container holds the port | Find it with `docker_ps` and stop it, or map a different port |
+| `docker logs` returns nothing | No output yet, or a non-json-file logging driver | Check state and start time with `docker_inspect`, then raise `tail` |
+| Command times out | Busy target or slow network | Verify the container/host, then raise `timeoutMs` and retry |
+
 ## License
 
 MIT
