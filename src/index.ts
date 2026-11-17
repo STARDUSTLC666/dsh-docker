@@ -42,6 +42,7 @@ export interface DockerPluginContext {
   get?(name: string): unknown
   subprocess: { spawn: SubprocessSpawnLike }
   tools: { register(definition: DockerToolDefinition): () => void }
+  effect?(effect: () => () => void, label?: string): unknown
   on(event: 'tools/pre-execute', listener: DockerPreExecuteListener): () => void
   on(event: 'dispose', listener: () => void): () => void
 }
@@ -59,6 +60,7 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
   const tools = buildDockerTools(cfg, runner, policyOf)
   if (cfg.execApproval || cfg.manageApproval) {
     ctx.on('tools/pre-execute', async (exec, next) => {
+      if (exec.name !== 'docker_exec' && exec.name !== 'docker_manage') return next()
       // Preserve denials from the remaining host waterfall before adding a question.
       const downstream = await next()
       if (downstream.kind === 'deny') return downstream
@@ -93,9 +95,14 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
   for (const definition of tools) {
     disposers.push(ctx.tools.register(definition))
   }
-  ctx.on('dispose', () => {
+  const teardown = () => {
     for (const dispose of disposers) dispose()
-  })
+  }
+  if (typeof ctx.effect === 'function') {
+    ctx.effect(() => teardown, 'docker.tools()')
+  } else if (typeof ctx.on === 'function') {
+    ctx.on('dispose', teardown)
+  }
 }
 
 export * from './args.js'

@@ -23,6 +23,7 @@ export interface DockerToolDefinition {
     schema: Record<string, unknown>
     render(args: unknown, value: unknown): ContentBlock[]
   }
+  isConcurrencySafe?(args?: unknown): boolean
   execute(args: unknown, exec: unknown): Promise<unknown>
   timeoutMs?: number
 }
@@ -142,6 +143,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerPs: DockerToolDefinition = {
     name: 'docker_ps',
+    isConcurrencySafe: () => true,
     description: '列出 Docker 容器（含状态/镜像/运行状态）。all=true 时包含已停止容器；name 可按容器名过滤。',
     parameters: compileParameters({
       all: { type: 'boolean', description: '是否包含已停止容器（默认 false）。' },
@@ -179,6 +181,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerLogs: DockerToolDefinition = {
     name: 'docker_logs',
+    isConcurrencySafe: () => true,
     description: '查看容器日志尾部。container 必填；tail 为行数（1-2000，默认 100）；follow=true 时持续跟踪（受超时限制，一般用于短时观察）。',
     parameters: compileParameters({
       container: { type: 'string', required: true, description: '容器名或 ID（必填）。' },
@@ -210,6 +213,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerImages: DockerToolDefinition = {
     name: 'docker_images',
+    isConcurrencySafe: () => true,
     description: '列出本地 Docker 镜像（仓库/标签/大小/创建时间）。dangling=true 时只列未被任何标签引用的悬空镜像。',
     parameters: compileParameters({
       dangling: { type: 'boolean', description: '是否只列出悬空镜像（默认 false）。' },
@@ -239,6 +243,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerInspect: DockerToolDefinition = {
     name: 'docker_inspect',
+    isConcurrencySafe: () => true,
     description: '查看容器详情：镜像、运行状态、启动时间、端口映射。',
     parameters: compileParameters({
       container: { type: 'string', required: true, description: '容器名或 ID（必填）。' },
@@ -318,6 +323,7 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
 
   const dockerHealth: DockerToolDefinition = {
     name: 'docker_health',
+    isConcurrencySafe: () => true,
     description: 'dsh-docker 自检：验证 docker CLI 与守护进程是否可用（执行 docker version），并汇总安全配置（exec/破坏性 manage 审批门、超时）。遇到问题时先运行本工具定位。',
     parameters: compileParameters({}),
     output: {

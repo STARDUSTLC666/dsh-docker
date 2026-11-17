@@ -5,6 +5,7 @@ export interface DockerApprovalService {
         policy?: unknown;
     };
     overrideOf?(session: unknown): unknown;
+    effectivePolicy?(session: unknown): unknown;
 }
 export declare function dockerApprovalPolicy(service: DockerApprovalService | undefined, execution: unknown): DockerApprovalPolicy;
 export declare function dockerApprovalCheck(enabled: boolean, policy: DockerApprovalPolicy, setting: string): {

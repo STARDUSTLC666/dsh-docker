@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Docker",
+    "description": "Inspect containers, images, and logs, run commands inside containers, and manage container lifecycle behind Host approval gates."
+  }
+}

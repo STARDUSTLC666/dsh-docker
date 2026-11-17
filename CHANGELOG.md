@@ -1,5 +1,10 @@
 # 更新记录
 
+## 0.5.12 (2026-11-18)
+
+- 深度适配 DSH 0.2.2：补齐 manifestVersion 1 与双语元数据；改用 Cordis 4 `ctx.effect` 管理清理，兼容 `effectivePolicy` 审批策略、跳过非 Docker 工具预检并支持自定义工作目录与只读并发安全。
+- Deeply adapt to DSH 0.2.2: add manifestVersion 1 and bilingual locale metadata; migrate cleanup to Cordis 4 `ctx.effect`, honor `effectivePolicy` in approval checks, fast-path non-Docker tool hooks, and mark read-only tools concurrency-safe.
+
 ## 0.5.11 (2026-11-17)
 
 - 在原生插件详情页单独检查和安装兼容版本。自动安装默认关闭，可为该插件开启空闲时的稳定补丁更新。

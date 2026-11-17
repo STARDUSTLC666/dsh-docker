@@ -41,6 +41,7 @@ export interface DockerPluginContext {
     tools: {
         register(definition: DockerToolDefinition): () => void;
     };
+    effect?(effect: () => () => void, label?: string): unknown;
     on(event: 'tools/pre-execute', listener: DockerPreExecuteListener): () => void;
     on(event: 'dispose', listener: () => void): () => void;
 }

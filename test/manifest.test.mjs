@@ -24,4 +24,28 @@ test('宿主操作无额外引擎依赖，更新控件使用共享库 + 名称�
   assert.match(pkg.dependencies['@stardustlc/dsh-updates'], /^\d+\.\d+\.\d+$/, 'Shared update dependency must be pinned exactly')
   assert.equal(pkg.name, '@stardustlc/dsh-docker')
   assert.match(pkg.version, /^\d+\.\d+\.\d+$/)
+  assert.equal(pkg.dsh.manifestVersion, 1)
+  assert.equal(pkg.exports['./locale/*.json'], './locale/*.json')
+  assert.ok(existsSync(new URL('../locale/zh.json', import.meta.url)))
+  assert.ok(existsSync(new URL('../locale/en.json', import.meta.url)))
+})
+
+test('Cordis 4 ctx.effect 卸载时正确清理全部工具', async () => {
+  const { apply } = await import('../lib/index.js')
+  const active = new Set()
+  const effects = []
+  apply({
+    subprocess: { spawn() { throw new Error('unused') } },
+    tools: {
+      register(def) {
+        active.add(def.name)
+        return () => active.delete(def.name)
+      },
+    },
+    on() { return () => {} },
+    effect(fn) { effects.push(fn()) },
+  }, {})
+  assert.equal(active.size, 7)
+  for (const dispose of effects) dispose?.()
+  assert.equal(active.size, 0)
 })

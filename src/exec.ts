@@ -13,7 +13,7 @@ export interface RunResult {
 }
 
 export interface ProcessRunner {
-  run(argv: readonly string[], options?: { timeoutMs?: number; signal?: AbortSignal }): Promise<RunResult>
+  run(argv: readonly string[], options?: { timeoutMs?: number; signal?: AbortSignal; cwd?: string }): Promise<RunResult>
 }
 
 export interface SubprocessHandleLike {
@@ -52,7 +52,7 @@ export function createSubprocessRunner(spawn: SubprocessSpawnLike, graceMs: numb
         signal.throwIfAborted()
         handle = spawn({
           argv,
-          cwd: process.cwd(),
+          cwd: options?.cwd ?? process.cwd(),
           stdio: {
             stdin: 'ignore',
             stdout: { maxBytes: COLLECT_BYTES },

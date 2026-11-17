@@ -3,11 +3,12 @@ export type DockerApprovalPolicy = 'ask' | 'never' | 'unknown'
 export interface DockerApprovalService {
   config?: { policy?: unknown }
   overrideOf?(session: unknown): unknown
+  effectivePolicy?(session: unknown): unknown
 }
 export function dockerApprovalPolicy(service: DockerApprovalService | undefined, execution: unknown): DockerApprovalPolicy {
   try {
     const session = (execution as { agent?: { session?: unknown } } | null)?.agent?.session
-    const policy = (session === undefined ? undefined : service?.overrideOf?.(session)) ?? service?.config?.policy
+    const policy = (session === undefined ? undefined : (service?.effectivePolicy?.(session) ?? service?.overrideOf?.(session))) ?? service?.config?.policy
     return policy === 'ask' || policy === 'never' ? policy : 'unknown'
   } catch { return 'unknown' }
 }
