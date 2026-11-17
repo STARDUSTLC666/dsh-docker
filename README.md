@@ -4,6 +4,8 @@
 
 **在 DSH 里看容器状态、读日志、处理问题。**
 
+DeepSeek Harness（`>=0.2.2-rc.3`）Docker 管理插件：提供容器与镜像状态巡检、日志查询、容器内受控命令执行及生命周期管理，写操作接入宿主审批策略并支持 Cordis 热重载清理。
+
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![total downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-total-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
 **[安装使用](#安装) · [使用流程](#开始使用) · [完整说明](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.zh.md)**
