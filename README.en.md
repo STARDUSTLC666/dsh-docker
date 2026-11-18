@@ -35,14 +35,17 @@ For the web profile, replace `desktop` with `web`. Restart that DSH profile afte
 
 ## Start using it
 
-1. Start Docker Engine and confirm your user can access it through Docker commands.
-2. List containers and images in DSH; select a target and inspect its status and logs.
-3. Before starting, stopping or cleaning up, check the target and consequences, then confirm.
-4. Recheck the result. Investigate actual permission or connection errors instead of treating an unexecuted action as success.
+Skip switching terminals for `docker ps / logs / inspect` — follow a safe read-first workflow:
 
-Example request：
+1. **Make sure Docker is running**: Start Docker Desktop or Docker Engine; status checks, image listings, and log reads run read-only without touching running services.
+2. **Pinpoint failing containers**: Ask the assistant to list unhealthy or exited containers, pull recent logs, and cross-reference errors against your workspace code.
+3. **Approve state changes explicitly**: In-container commands (`exec`) and stop/restart/remove actions pause for host confirmation so you can verify the exact container name before execution.
 
-> Check the Docker engine, list containers and read this container’s recent logs without changing anything.
+Ready-to-copy prompts:
+
+- **Read-only diagnosis**: `Check which containers are running or exited, pull the last 100 log lines of any failing service, and explain the root cause without restarting anything.`
+- **Local stack check**: `Inspect the port mappings and health status of our local Postgres and Redis containers against .env.example.`
+- **Restart & verify**: `Restart the api-server container after my confirmation, then check its startup logs to confirm it came up cleanly.`
 
 ## Before you start
 

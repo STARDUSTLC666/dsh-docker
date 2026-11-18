@@ -1,5 +1,10 @@
 # 更新记录
 
+## 0.5.15 (2026-11-18)
+
+- 优化中英文使用流程：围绕「只读巡检拉日志 → 结合代码定位根因 → 宿主审批后重启验证」整理三步排障闭环与可直接复制的自然语言示例。
+- Refine bilingual usage workflows around safe read-first container diagnosis, log root-cause analysis, and approval-gated lifecycle actions with copy-ready prompts.
+
 ## 0.5.14 (2026-11-18)
 
 - 更新区底部新增克制、无打扰的 GitHub 点赞与问题反馈快捷链接，并完善中英文检索关键词。
