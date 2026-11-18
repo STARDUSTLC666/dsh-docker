@@ -1,6 +1,6 @@
 {
   "name": "@stardustlc/dsh-docker",
-  "version": "0.5.16",
+  "version": "0.5.17",
   "description": "DeepSeek Harness Docker 管理插件：容器与镜像巡检、日志排障、受控执行与宿主审批确认。欢迎提交 issues 和 PR。",
   "type": "module",
   "main": "lib/index.js",
@@ -76,7 +76,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@stardustlc/dsh-updates": "0.2.3"
+    "@stardustlc/dsh-updates": "0.2.4"
   },
   "icon": "./assets/plugin-icon.webp"
 }
