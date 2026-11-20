@@ -206,7 +206,10 @@ export function buildDockerTools(config: ResolvedDockerConfig, runner: ProcessRu
       const tail = typeof tailRaw === 'number' && Number.isInteger(tailRaw) ? Math.min(2000, Math.max(1, tailRaw)) : 100
       const follow = args.follow === true
       const result = await runChecked(runner, logsArgs(cfg.dockerPath, container, tail, follow), follow ? Math.min(timeout, 30000) : timeout, 'docker logs', executionSignal(exec))
-      return { container, tail, text: result.stdout }
+      // Successful docker logs forwards the container's stderr separately too.
+      // Both buffers are preserved; their original interleaving is unavailable.
+      const separator = result.stdout && result.stderr && !result.stdout.endsWith('\n') ? '\n' : ''
+      return { container, tail, text: result.stdout + separator + result.stderr }
     },
     timeoutMs: timeout,
   }

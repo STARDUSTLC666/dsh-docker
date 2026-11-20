@@ -1,5 +1,11 @@
 # 更新记录
 
+## 0.5.21 (2026-11-20)
+
+- 修复 `docker_logs` 丢弃容器 stderr 日志、误报日志为空的问题；保留 stdout 与 stderr，并补充双流回归覆盖。
+- Preserve container stderr in `docker_logs` alongside stdout so application errors are no longer silently omitted or reported as empty logs.
+- 同步共享更新组件 0.2.9，修复取消窗口和失败响应清理，并确保运行中旧协调器在空闲后接管修复。
+
 ## 0.5.20 (2026-11-20)
 
 - 升级共享更新组件至 `@stardustlc/dsh-updates@0.2.7`：对话页「有新版本」提醒浮卡支持无交互 15 秒自动收起（悬停、聚焦、查看记录或确认弹窗时自动暂停，安装成功提示 6 秒收起，安装中/失败/需要重启仍保持常驻不隐藏）。
