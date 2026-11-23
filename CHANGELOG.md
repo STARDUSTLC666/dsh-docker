@@ -1,5 +1,11 @@
 # 更新记录
 
+## 0.5.23 (2026-11-23)
+
+- 将 `tools/pre-execute` 审批监听器纳入插件卸载清理（`disposers`），确保 `dispose` 与 `ctx.effect` 释放不残留，并补充对应单元测试。
+- 修正中英文 `README` 对只读巡检字段（移除未实现的环境变量宣称）与审批范围（仅 `exec` 及 `stop`/`restart`/`rm` 需确认，`start` 直接放行）的表述；补充 `graceMs` 配置示例、更新 `docs/USAGE.en.md` 测试计数，并修正 `docs/REFERENCE.{zh,en}.md` 语言切换链接与更新说明。
+- Track the `tools/pre-execute` approval listener disposer in `disposers` for clean `dispose`/`ctx.effect` teardown (with regression tests); align README claims with actual read-only inspect fields and `stop`/`restart`/`rm` approval scope; document `graceMs` and refresh `docs/USAGE.en.md` and `docs/REFERENCE.{zh,en}.md`.
+
 ## 0.5.22 (2026-11-20)
 
 - 升级共享更新组件至 0.2.10，移除跨插件右下角浮动提醒，保留工作台及插件详情页更新控制。

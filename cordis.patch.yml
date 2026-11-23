@@ -8,6 +8,7 @@
 #     config:
 #       # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
 #       timeoutMs: 60000       # 单次操作超时（默认 60 秒，5 秒 - 10 分钟）
+#       # graceMs: 15000       # 取消或超时后等待子进程优雅退出的宽限（默认 15 秒，1 秒 - 2 分钟）
 #       # execApproval: false  # 关闭 docker_exec 的审批门（默认 true）
 #       # manageApproval: false # 关闭 stop/restart/rm 审批门（默认 true，不推荐）
 #

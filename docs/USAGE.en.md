@@ -35,6 +35,7 @@ Then restart the web service. To clean up fully, also remove the plugin entry fr
     # dockerPath: C:\Program Files\Docker\Docker\resources\bin\docker.exe
     dockerPath: docker     # optional; or use the DSH_DOCKER_PATH env var
     timeoutMs: 60000       # per-operation timeout (default 60s, 5s - 10min)
+    # graceMs: 15000       # grace period before force-killing on timeout/cancel (default 15s, 1s - 2min)
     # execApproval: false  # disable the docker_exec approval gate (default true)
     # manageApproval: false # disable approval for stop/restart/rm (default true; not recommended)
 ```
@@ -75,7 +76,7 @@ docker_manage { container: web, action: restart }
 
 ```bash
 pnpm install
-pnpm test       # build + 35 tests
+pnpm test       # build + 53 tests
 ```
 
 ## Troubleshooting

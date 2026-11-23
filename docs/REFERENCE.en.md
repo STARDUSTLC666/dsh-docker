@@ -2,7 +2,7 @@
 
 # dsh-docker
 
-[中文](../README.md)
+[中文](./REFERENCE.zh.md)
 
 ![dsh-docker whale girl plugin cover](https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/assets/cover-whale-girl.png)
 
@@ -34,7 +34,7 @@ For the web version, replace `desktop` with `web`. Restart DSH after installatio
 
 1. Start Docker Engine and confirm your user can access it through Docker commands.
 2. List containers and images in DSH; select a target and inspect its status and logs.
-3. Before starting, stopping or cleaning up, check the target and consequences, then confirm.
+3. Before stopping, restarting or removing a container, check the target and consequences, then confirm the approval prompt (`start` runs without extra approval).
 4. Recheck the result. Investigate actual permission or connection errors instead of treating an unexecuted action as success.
 
 ## Requirements and configuration
@@ -52,7 +52,7 @@ Detailed configuration, tool arguments and troubleshooting are in the [usage gui
 
 ## Plugin updates
 
-Requires DSH 0.2.2-rc.3 or newer. Update controls sit at the bottom of the existing workbench, or native plugin details for plugins without a workbench. Checks, release notes and preferences expand in place, with no separate update page or settings menu. Automatic checks are on by default; **automatic installation is off by default**. Only explicit opt-in permits compatible stable patches while idle with no unsaved changes. Preferences are independent, with per-plugin disable, deferral and ignore controls. No forced DSH restart or upgrade, and local-source installations stay unchanged. Suite components explain and operate on the whole Suite in the same footer.
+Requires DSH 0.2.2-rc.3 or newer. Update controls sit at the bottom of the existing workbench, or native plugin details for plugins without a workbench. Checks, release notes and preferences expand in place, with no separate update page or settings menu. Automatic checks are on by default; **automatic installation is off by default**. Only explicit opt-in permits compatible stable updates (compatible minor and patch releases by default, or patch-only) while idle with no unsaved changes. Preferences are independent, with per-plugin disable, deferral and ignore controls. No forced DSH restart or upgrade, and local-source installations stay unchanged. Suite components explain and operate on the whole Suite in the same footer.
 
 Older releases need one manual update in native plugin management to acquire these controls. Publishing to npm does not replace an existing user installation.
 

@@ -24,7 +24,12 @@ function makeFakeCtx() {
     },
     on(event, listener) {
       (listeners[event] ??= []).push(listener)
-      return () => {}
+      return () => {
+        const list = listeners[event]
+        if (!list) return
+        const index = list.indexOf(listener)
+        if (index >= 0) list.splice(index, 1)
+      }
     },
   }
   return { ctx, registered, listeners }
@@ -92,10 +97,24 @@ test('无效配置响亮失败，不静默回退默认值', () => {
   assert.throws(() => apply(ctx, { timeoutMs: -1 }), /timeoutMs/)
 })
 
-test('dispose 卸载全部工具', () => {
+test('dispose 卸载全部工具并注销 tools/pre-execute 监听器', () => {
   const { ctx, registered, listeners } = makeFakeCtx()
   apply(ctx, {})
   assert.equal(registered.length, 7)
-  for (const listener of listeners.dispose ?? []) listener()
+  assert.equal(listeners['tools/pre-execute']?.length, 1)
+  for (const listener of [...(listeners.dispose ?? [])]) listener()
   assert.equal(registered.length, 0)
+  assert.equal(listeners['tools/pre-execute']?.length, 0)
+})
+
+test('ctx.effect 卸载时同时清理全部工具与 tools/pre-execute 监听器', () => {
+  const { ctx, registered, listeners } = makeFakeCtx()
+  const cleanups = []
+  ctx.effect = (fn) => cleanups.push(fn())
+  apply(ctx, {})
+  assert.equal(registered.length, 7)
+  assert.equal(listeners['tools/pre-execute']?.length, 1)
+  for (const cleanup of cleanups) cleanup?.()
+  assert.equal(registered.length, 0)
+  assert.equal(listeners['tools/pre-execute']?.length, 0)
 })

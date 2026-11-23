@@ -21,9 +21,9 @@ Docker management plugin for DeepSeek Harness (`>=0.2.2-rc.3`) with container/im
 
 | Capability | Details |
 | :--- | :--- |
-| **Read-Only Inspection** | Check running/exited containers, images, port mappings, env config, and daemon health without touching services |
+| **Read-Only Inspection** | Check running/exited containers, images, port mappings, start times, and daemon health without touching services |
 | **Log Diagnosis** | Pull recent logs from failing containers and correlate errors directly with your workspace codebase |
-| **Approval-Gated Actions** | Bounded in-container `exec` and start/stop/restart/cleanup operations pause for explicit host confirmation |
+| **Approval-Gated Actions** | Bounded in-container `exec` and destructive lifecycle operations (`stop` / `restart` / `rm`) pause for explicit host confirmation (`start` runs without extra approval) |
 
 ## Install
 

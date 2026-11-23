@@ -58,8 +58,9 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
   const runner = createSubprocessRunner((spec) => ctx.subprocess.spawn(spec), cfg.graceMs, cfg.timeoutMs)
   const policyOf = (execution: unknown) => dockerApprovalPolicy((ctx.get ? ctx.get('approval') : ctx.approval) as DockerApprovalService | undefined, execution)
   const tools = buildDockerTools(cfg, runner, policyOf)
+  const disposers: Array<() => void> = []
   if (cfg.execApproval || cfg.manageApproval) {
-    ctx.on('tools/pre-execute', async (exec, next) => {
+    const disposePreExecute = ctx.on('tools/pre-execute', async (exec, next) => {
       if (exec.name !== 'docker_exec' && exec.name !== 'docker_manage') return next()
       // Preserve denials from the remaining host waterfall before adding a question.
       const downstream = await next()
@@ -89,9 +90,9 @@ export function apply(ctx: DockerPluginContext, config?: DockerConfig | null): v
       }
       return downstream
     })
+    if (typeof disposePreExecute === 'function') disposers.push(disposePreExecute)
   }
 
-  const disposers: Array<() => void> = []
   for (const definition of tools) {
     disposers.push(ctx.tools.register(definition))
   }
