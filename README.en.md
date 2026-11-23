@@ -2,13 +2,13 @@
 
 # Docker
 
-**Inspect containers and diagnose problems from DSH.**
+> **Inspect containers and logs read-only from DeepSeek Harness, then approve state changes explicitly.**
 
-Docker management plugin for DeepSeek Harness (`>=0.2.2-rc.3`): inspects containers and images, reads logs, runs bounded in-container commands behind host approval gates, and cleans up cleanly on Cordis hot reload.
+Docker management plugin for DeepSeek Harness (`>=0.2.2-rc.3`) with container/image health checks, log diagnosis, approval-gated `exec` & lifecycle actions, and clean Cordis hot-reload teardown.
 
 [![npm](https://img.shields.io/npm/v/@stardustlc/dsh-docker)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker) [![total downloads](https://raw.githubusercontent.com/STARDUSTLC666/dsh-suite/npm-downloads/assets/dsh-docker-total-downloads.svg)](https://www.npmjs.com/package/@stardustlc/dsh-docker)
 
-**[Install](#install) · [Workflow](#start-using-it) · [Full guide](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md)**
+**[Features](#features) · [Install](#install) · [Workflow](#start-using-it) · [Full guide](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md)**
 
 <picture>
   <source media="(prefers-color-scheme: dark) and (max-width: 640px)" srcset="https://raw.githubusercontent.com/STARDUSTLC666/dsh-docker/master/docs/assets/intro/workflow-en-mobile-dark.svg">
@@ -19,29 +19,29 @@ Docker management plugin for DeepSeek Harness (`>=0.2.2-rc.3`): inspects contain
 
 ## Features
 
-- Inspect containers, images and resource status.
-- Read logs or run controlled commands against a specific target.
-- Review the impact of start, stop and cleanup actions.
+| Capability | Details |
+| :--- | :--- |
+| **Read-Only Inspection** | Check running/exited containers, images, port mappings, env config, and daemon health without touching services |
+| **Log Diagnosis** | Pull recent logs from failing containers and correlate errors directly with your workspace codebase |
+| **Approval-Gated Actions** | Bounded in-container `exec` and start/stop/restart/cleanup operations pause for explicit host confirmation |
 
 ## Install
 
-Open **Plugins** in the DSH desktop app and install `@stardustlc/dsh-docker`. If the CLI is available:
+Open **Plugins** in the DSH desktop app and install `@stardustlc/dsh-docker`, or use the CLI:
 
 ```bash
 dsh plugin --profile desktop add @stardustlc/dsh-docker
 ```
 
-For the web profile, replace `desktop` with `web`. Restart that DSH profile after installation. The package’s DSH requirement is `>=0.2.2-rc.3`.
+For the web profile, replace `desktop` with `web` and restart DSH. Requires DSH `>=0.2.2-rc.3`.
 
 ## Start using it
 
-Skip switching terminals for `docker ps / logs / inspect` — follow a safe read-first workflow:
+1. **Ensure Docker is running**: Start Docker Desktop or Docker Engine; status and log reads run strictly read-only.
+2. **Diagnose failures**: Ask the assistant to list unhealthy or exited containers and analyze recent log lines against your repo.
+3. **Approve changes explicitly**: Review container names in host approval cards before running `exec`, restart, stop, or remove actions.
 
-1. **Make sure Docker is running**: Start Docker Desktop or Docker Engine; status checks, image listings, and log reads run read-only without touching running services.
-2. **Pinpoint failing containers**: Ask the assistant to list unhealthy or exited containers, pull recent logs, and cross-reference errors against your workspace code.
-3. **Approve state changes explicitly**: In-container commands (`exec`) and stop/restart/remove actions pause for host confirmation so you can verify the exact container name before execution.
-
-Ready-to-copy prompts:
+### Ready-to-copy prompts
 
 - **Read-only diagnosis**: `Check which containers are running or exited, pull the last 100 log lines of any failing service, and explain the root cause without restarting anything.`
 - **Local stack check**: `Inspect the port mappings and health status of our local Postgres and Redis containers against .env.example.`
@@ -49,23 +49,17 @@ Ready-to-copy prompts:
 
 ## Before you start
 
-Requires a running Docker Engine accessible to the current user. Actions follow host approval.
-
-Configuration, detailed tools and troubleshooting: [full reference](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md).
+- Requires a running Docker Engine accessible to the current user; write actions follow host approval policy.
+- Full configuration, tools, and troubleshooting: [full reference](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md).
 
 ## Plugin updates
 
-Check updates at the bottom of the workbench or native plugin details. Automatic checks are on by default; **automatic installation is off**. You choose whether to install and when to restart. Suite-managed components update with their bundle. [Update behavior](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md).
+Check updates at the bottom of native plugin details. Automatic checks are on by default; **automatic installation is off**. Suite-managed components update with their bundle.
 
-## Documentation
+## Documentation & feedback
 
-- [Full usage, configuration and limits](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md)
-- [Release notes](https://github.com/STARDUSTLC666/dsh-docker/blob/master/CHANGELOG.md)
-- [Validation scope and history](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/VALIDATION.md)
-
-## Feedback and contributions
-
-If the plugin helps, a Star makes it easier for others to discover. Report problems or suggest improvements in [Issues](https://github.com/STARDUSTLC666/dsh-docker/issues); code and documentation [PRs](https://github.com/STARDUSTLC666/dsh-docker/pulls) are welcome. Include versions and reproduction steps, and remove credentials from reports.
+- [Full usage, configuration and limits](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/REFERENCE.en.md) · [Release notes](https://github.com/STARDUSTLC666/dsh-docker/blob/master/CHANGELOG.md) · [Validation history](https://github.com/STARDUSTLC666/dsh-docker/blob/master/docs/VALIDATION.md)
+- Stars, [Issues](https://github.com/STARDUSTLC666/dsh-docker/issues), and [PRs](https://github.com/STARDUSTLC666/dsh-docker/pulls) are welcome (strip credentials first).
 
 ## License
 
