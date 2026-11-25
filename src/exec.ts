@@ -19,8 +19,8 @@ export interface ProcessRunner {
 export interface SubprocessHandleLike {
   done: Promise<{ exitCode: number | null; signal: string | null }>
   collected: {
-    stdout?: { readFrom(offset: number): { text: string } }
-    stderr?: { readFrom(offset: number): { text: string } }
+    stdout?: { readFrom(offset: number): { text: string; lossy?: boolean } }
+    stderr?: { readFrom(offset: number): { text: string; lossy?: boolean } }
   }
   terminate(): void
 }
@@ -63,9 +63,16 @@ export function createSubprocessRunner(spawn: SubprocessSpawnLike, graceMs: numb
         })
         const outcome = await handle.done
         signal.throwIfAborted()
-        const stdout = handle.collected.stdout?.readFrom(0).text ?? ''
-        const stderr = handle.collected.stderr?.readFrom(0).text ?? ''
-        return { exitCode: outcome.exitCode, signal: outcome.signal, stdout, stderr }
+        const stdout = handle.collected.stdout?.readFrom(0)
+        const stderr = handle.collected.stderr?.readFrom(0)
+        const lossyStreams = [
+          stdout?.lossy ? 'stdout' : undefined,
+          stderr?.lossy ? 'stderr' : undefined,
+        ].filter((stream): stream is string => stream !== undefined)
+        if (lossyStreams.length > 0) {
+          throw new Error('docker 命令输出超过 4 MiB，宿主已截断 ' + lossyStreams.join(' 和 ') + '；结果不完整，请缩小查询范围后重试。')
+        }
+        return { exitCode: outcome.exitCode, signal: outcome.signal, stdout: stdout?.text ?? '', stderr: stderr?.text ?? '' }
       } finally {
         clearTimeout(timer)
       }

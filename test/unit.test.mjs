@@ -43,20 +43,23 @@ test('命令解析保留空参数、相邻引号和原样变量，不执行展�
 test('parsePsJson：docker ps JSON 行', () => {
   const lines = [
     JSON.stringify({ ID: 'abc123', Names: 'web-1', Image: 'nginx:latest', Status: 'Up 3 hours', State: 'running' }),
-    'not-json-line',
     JSON.stringify({ ID: 'def456', Names: 'db-1', Image: 'postgres:16', Status: 'Exited (0)', State: 'exited' }),
   ].join('\n')
   const rows = parsePsJson(lines)
   assert.equal(rows.length, 2)
   assert.equal(rows[0].name, 'web-1')
   assert.equal(rows[1].state, 'exited')
+  assert.throws(() => parsePsJson(lines.replace('\n{', '\nnot-json\n{')), /docker ps 输出第 2 行不是有效 JSON/)
+  assert.throws(() => parsePsJson('null'), /docker ps 输出第 1 行不是 JSON 对象/)
 })
 
 test('parseImagesJson：docker images JSON 行', () => {
-  const rows = parseImagesJson(JSON.stringify({ ID: 'sha256:abc', Repository: 'nginx', Tag: 'latest', Size: '188MB', CreatedSince: '2 days ago' }) + '\nbad-line\n')
+  const output = JSON.stringify({ ID: 'sha256:abc', Repository: 'nginx', Tag: 'latest', Size: '188MB', CreatedSince: '2 days ago' }) + '\n'
+  const rows = parseImagesJson(output)
   assert.equal(rows.length, 1)
   assert.equal(rows[0].repository, 'nginx')
   assert.equal(rows[0].size, '188MB')
+  assert.throws(() => parseImagesJson(output + 'bad-line\n'), /docker images 输出第 2 行不是有效 JSON/)
 })
 
 test('parseInspectJson：摘要提取', () => {

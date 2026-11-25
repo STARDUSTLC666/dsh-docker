@@ -13,24 +13,36 @@ export interface ContainerInfo {
   state: string
 }
 
-/** docker ps --format json 的每一行解析。 */
-export function parsePsJson(text: string): ContainerInfo[] {
-  const rows: ContainerInfo[] = []
+function parseJsonLines(text: string, command: string): Record<string, unknown>[] {
+  const rows: Record<string, unknown>[] = []
+  let lineNumber = 0
   for (const line of text.split(/\r?\n/)) {
+    lineNumber += 1
     const trimmed = line.trim()
     if (trimmed === '') continue
+    let raw: unknown
     try {
-      const raw = JSON.parse(trimmed) as Record<string, unknown>
-      rows.push({
-        id: typeof raw.ID === 'string' ? raw.ID : String(raw.ID ?? ''),
-        name: typeof raw.Names === 'string' ? raw.Names : String(raw.Names ?? ''),
-        image: typeof raw.Image === 'string' ? raw.Image : String(raw.Image ?? ''),
-        status: typeof raw.Status === 'string' ? raw.Status : String(raw.Status ?? ''),
-        state: typeof raw.State === 'string' ? raw.State : String(raw.State ?? ''),
-      })
-    } catch { /* 跳过坏行 */ }
+      raw = JSON.parse(trimmed)
+    } catch (error) {
+      throw new Error('docker ' + command + ' 输出第 ' + lineNumber + ' 行不是有效 JSON。', { cause: error })
+    }
+    if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+      throw new Error('docker ' + command + ' 输出第 ' + lineNumber + ' 行不是 JSON 对象。')
+    }
+    rows.push(raw as Record<string, unknown>)
   }
   return rows
+}
+
+/** docker ps --format json 的每一行解析；任何坏行都视为不完整结果。 */
+export function parsePsJson(text: string): ContainerInfo[] {
+  return parseJsonLines(text, 'ps').map((raw) => ({
+    id: typeof raw.ID === 'string' ? raw.ID : String(raw.ID ?? ''),
+    name: typeof raw.Names === 'string' ? raw.Names : String(raw.Names ?? ''),
+    image: typeof raw.Image === 'string' ? raw.Image : String(raw.Image ?? ''),
+    status: typeof raw.Status === 'string' ? raw.Status : String(raw.Status ?? ''),
+    state: typeof raw.State === 'string' ? raw.State : String(raw.State ?? ''),
+  }))
 }
 
 /** 镜像摘要。 */
@@ -42,24 +54,15 @@ export interface ImageInfo {
   createdSince: string
 }
 
-/** docker images --format json 的每一行解析。 */
+/** docker images --format json 的每一行解析；任何坏行都视为不完整结果。 */
 export function parseImagesJson(text: string): ImageInfo[] {
-  const rows: ImageInfo[] = []
-  for (const line of text.split(/\r?\n/)) {
-    const trimmed = line.trim()
-    if (trimmed === '') continue
-    try {
-      const raw = JSON.parse(trimmed) as Record<string, unknown>
-      rows.push({
-        id: typeof raw.ID === 'string' ? raw.ID : String(raw.ID ?? ''),
-        repository: typeof raw.Repository === 'string' ? raw.Repository : String(raw.Repository ?? ''),
-        tag: typeof raw.Tag === 'string' ? raw.Tag : String(raw.Tag ?? ''),
-        size: typeof raw.Size === 'string' ? raw.Size : String(raw.Size ?? ''),
-        createdSince: typeof raw.CreatedSince === 'string' ? raw.CreatedSince : String(raw.CreatedSince ?? ''),
-      })
-    } catch { /* 跳过坏行 */ }
-  }
-  return rows
+  return parseJsonLines(text, 'images').map((raw) => ({
+    id: typeof raw.ID === 'string' ? raw.ID : String(raw.ID ?? ''),
+    repository: typeof raw.Repository === 'string' ? raw.Repository : String(raw.Repository ?? ''),
+    tag: typeof raw.Tag === 'string' ? raw.Tag : String(raw.Tag ?? ''),
+    size: typeof raw.Size === 'string' ? raw.Size : String(raw.Size ?? ''),
+    createdSince: typeof raw.CreatedSince === 'string' ? raw.CreatedSince : String(raw.CreatedSince ?? ''),
+  }))
 }
 
 /** docker inspect 的 JSON 摘要。 */

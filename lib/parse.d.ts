@@ -11,7 +11,7 @@ export interface ContainerInfo {
     status: string;
     state: string;
 }
-/** docker ps --format json 的每一行解析。 */
+/** docker ps --format json 的每一行解析；任何坏行都视为不完整结果。 */
 export declare function parsePsJson(text: string): ContainerInfo[];
 /** 镜像摘要。 */
 export interface ImageInfo {
@@ -21,7 +21,7 @@ export interface ImageInfo {
     size: string;
     createdSince: string;
 }
-/** docker images --format json 的每一行解析。 */
+/** docker images --format json 的每一行解析；任何坏行都视为不完整结果。 */
 export declare function parseImagesJson(text: string): ImageInfo[];
 /** docker inspect 的 JSON 摘要。 */
 export declare function parseInspectJson(text: string): Record<string, unknown>;
