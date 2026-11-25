@@ -1,5 +1,10 @@
 # 更新记录
 
+## 0.5.24 (2026-11-25)
+
+- 检测宿主截断的 stdout/stderr，显式拒绝不完整的 Docker 命令结果；`docker ps` 与 `docker images` 的 JSON 行损坏时报告行号，不再静默遗漏容器或镜像。
+- Reject Docker command results when the host reports truncated stdout/stderr; report malformed `docker ps` / `docker images` JSON lines instead of silently omitting containers or images.
+
 ## 0.5.23 (2026-11-23)
 
 - 将 `tools/pre-execute` 审批监听器纳入插件卸载清理（`disposers`），确保 `dispose` 与 `ctx.effect` 释放不残留，并补充对应单元测试。
