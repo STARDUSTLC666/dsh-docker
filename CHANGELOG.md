@@ -1,5 +1,10 @@
 # 更新记录
 
+## 0.5.25 (2026-11-28)
+
+- 更新详情页现在会保留较新检查的结果，慢轮询返回时不再把版本或任务状态退回旧值。
+- Keep newer update-check results and job status when an older background request finishes later.
+
 ## 0.5.24 (2026-11-25)
 
 - 检测宿主截断的 stdout/stderr，显式拒绝不完整的 Docker 命令结果；`docker ps` 与 `docker images` 的 JSON 行损坏时报告行号，不再静默遗漏容器或镜像。
